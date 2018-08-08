@@ -1,0 +1,10 @@
+util.AddNetworkString("ClothingSystem.SpawnEntity")
+util.AddNetworkString("ClothingSystem.ItemFolderDrawToText")
+util.AddNetworkString("ClothingSystem.ConstructData")
+util.AddNetworkString("ClothingSystem.WearEveryone")
+util.AddNetworkString("ClothingSystem.DropItem")
+util.AddNetworkString("ClothingSystem.DeadOrDisconnected")
+util.AddNetworkString("ClothingSystem.VGUI")
+util.AddNetworkString("ClothingSystem.UpdateOtherParametrs")
+
+file.CreateDir("clothing_system")

@@ -1,0 +1,35 @@
+Для создания базы одежды, нужно создать SH файл, который будет выполняться как на сервере, так и на клиенте. Проще всего создать такой файл в папке lua/autorun/.
+
+## Описание обязательных параметров:
+**BoneType** - условные кости, которые будут блокироваться при экипировке, и разблокироваться при снятии одежды _(Тип переменной - Array)_
+
+## Описание второстепенных параметров:
+**NiceModel** - модели игрока, которые могут использовать эту одежду _(Тип переменной - Array)_
+
+## Пример содержимого файла:
+```lua
+list.Set( "player_base_clothing_system", "pony", {
+    NiceModel = {
+        'models/ppm/player_default_base_new.mdl',
+        'models/ppm/player_default_base_new_nj.mdl',
+    },
+    BoneType = {
+        Head = false, -- Голова
+        Neck = false, -- Шея
+
+        Chest = false, -- Грудь
+        BodyCenter = false, -- Тело
+        Pelvis = false, -- Круп
+
+        FrontLeftHoof = false, -- Переднее левое копыто
+        FontRightHoof = false, -- Переднее заднее копыто
+        RearLeftHoof = false, -- Заднее левое копыто
+        RearRightHoof = false, -- Заднее правое копыто
+
+        TipFrontLeftHoof = false, -- Переднее левое копыто после колена
+        TipFrontRightHoof = false, -- Переднее правое копыто после колена
+        TipRearLeftHoof = false, -- Заднее левое копыто после колена
+        TipRearRightHoof = false, -- Заднее правое копыто после колена
+    }
+} )
+```

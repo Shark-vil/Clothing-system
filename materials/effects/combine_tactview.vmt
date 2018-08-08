@@ -1,0 +1,8 @@
+"Modulate"
+{
+	"$znearer" 1
+	"$basetexture" "effects/combine_tactview"
+	"$translucent" "1"
+	"$additive" "1"
+	"$mod2x" "1"
+}

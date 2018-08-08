@@ -1,0 +1,6 @@
+"eyes"
+{
+	"$baseTexture" "models\nightfall soldier/eyeball_l"
+	"$iris" "models/nightfall soldier/6aec0f2a"
+	"$halflambert" 1
+}

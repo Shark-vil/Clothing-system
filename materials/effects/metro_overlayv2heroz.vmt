@@ -1,0 +1,9 @@
+"Modulate"
+{
+	"$znearer" 1
+	"$basetexture" "effects/metro_overlayv2heroz"
+	"$translucent" "1"
+	"$additive" "1"
+	"$mod2x" "1"
+}
+

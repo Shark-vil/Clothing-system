@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/equipmentpack/US_RANGER"
+	"$surfaceprop" "item"
+	"$model" 1
+}

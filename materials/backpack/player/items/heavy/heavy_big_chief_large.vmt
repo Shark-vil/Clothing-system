@@ -1,0 +1,5 @@
+"UnlitGeneric"
+{
+	"$baseTexture" "backpack\player\items\heavy/heavy_big_chief_large"
+	$translucent 1
+}

@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/equipmentpack/british_nm_col_#0"
+	"$surfaceprop" "item"
+	"$model" 1
+}

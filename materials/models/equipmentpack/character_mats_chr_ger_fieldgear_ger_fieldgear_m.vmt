@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/equipmentpack/Character_Mats_CHR_Ger_fieldgear_ger_fieldgear_m"
+	"$surfaceprop" "item"
+	"$model" 1
+}

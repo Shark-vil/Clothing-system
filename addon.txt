@@ -1,0 +1,7 @@
+// Extracted with MulleDK19's GMAD Extractor
+"AddonInfo"
+{
+	"name" "[FO:NV] Advanced Power Armor"
+	"author_name" "Unknown"
+	"info" "APA version from Fallout: New Vegas. Playermodel and NPC. Enhanced since the previous release on gmod.org have fun"
+}

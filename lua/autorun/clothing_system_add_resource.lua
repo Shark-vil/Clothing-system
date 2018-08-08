@@ -1,0 +1,12 @@
+file.CreateDir("clothing_system")
+file.CreateDir("clothing_system/cloth_players_data")
+file.CreateDir("clothing_system/module_list")
+
+resource.AddFile( "materials/entities/clothing_system/fg_pony_foe_security_armor.png" )
+resource.AddFile( "materials/models/vn_mlp/overmare_test/stable_security_armor.vmt" )
+resource.AddFile( "materials/sprites/cls_hazmatoverlay.vmt" )
+resource.AddFile( "models/ppm/foe_fg_serv/stable_security_armor4.mdl" )
+resource.AddFile( "sound/clothing_system/cs_equip.wav" )
+resource.AddFile( "sound/clothing_system/cs_ricochet_1.wav" )
+resource.AddFile( "sound/clothing_system/cs_ricochet_2.wav" )
+resource.AddFile( "sound/clothing_system/cs_unequip.wav" )

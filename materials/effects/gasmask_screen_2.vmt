@@ -1,0 +1,8 @@
+"unlitgeneric"
+{
+//	"$znearer" 1
+	"$basetexture" "effects/gasmask_screen_2"
+	"$translucent" "1"
+	"$additive" "1"
+//	"$mod2x" "1"
+}

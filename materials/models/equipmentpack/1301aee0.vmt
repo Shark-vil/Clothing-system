@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/equipmentpack/1301aee0"
+	"$surfaceprop" "item"
+	"$model" 1
+}
