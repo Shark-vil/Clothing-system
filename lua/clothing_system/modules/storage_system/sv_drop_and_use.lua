@@ -23,10 +23,10 @@ net.Receive("ClothingStorageSystem.EntitySpawner", function(len, ply)
         if ( !IsValid( entity ) ) then return end
         entity:SetModel( table[class]['model'] )
         entity:SetSkin( table[class]['skin'] )
-        if (data['usetype'] == "drop") then
+        if (data['usetype'] == "use") then
+            entity:SetPos( ply:GetPos() )
+        else
             entity:SetPos( tr.HitPos )
-        elseif (data['usetype'] == "use") then
-            entity:SetPos( Vector(math.random(-10000, 10000), math.random(-10000, 10000), math.random(-1000000, -100000)) )
         end
         for k, v in pairs(table[class]['bodygroups']) do
             entity:SetBodygroup(k, v)

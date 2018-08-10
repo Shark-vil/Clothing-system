@@ -43,14 +43,20 @@ local function wear()
     -- Создание локального пропа
     local outfit
     if (!item.Module && !item.SetPlayerModel) then
-        outfit = ents.CreateClientProp()
-        outfit.Group = "clothing_system"
+        outfit = ClientsideModel( item.WireModel, RENDERGROUP_OPAQUE )
         outfit.Class = class
         outfit.SteamID = steamid
         outfit.parentType = parentType
         outfit.Bone = Bone || 0
         outfit.Module = false
         outfit.SetPlayerModel = false
+        outfit.xAng = item.xAng || 0
+        outfit.yAng = item.yAng || 0
+        outfit.zAng = item.zAng || 0
+        outfit.xPos = item.xPos || 0
+        outfit.yPos = item.yPos || 0
+        outfit.zPos = item.zPos || 0
+        outfit.AttachBoneScaleModel = item.AttachBoneScaleModel || 1
         if ( item.Skin ) then
             if (table.Count(ReplaceItem) != 0 && ReplaceItem.Skin) then
                 outfit:SetSkin(ReplaceItem.Skin)
@@ -65,6 +71,13 @@ local function wear()
                 outfit:SetBodygroup(item.Bodygroup[1], item.Bodygroup[2])
             end
         end
+        if ( item.Bodygroups ) then
+            if (table.Count(ReplaceItem) != 0 && ReplaceItem.Bodygroup) then
+                outfit:SetBodygroups(ReplaceItem.Bodygroups)
+            else
+                outfit:SetBodygroups(item.Bodygroups)
+            end
+        end
         outfit:SetPos( owner:GetPos() )
         if (table.Count(ReplaceItem) != 0 && ReplaceItem.WireModel) then
             outfit:SetModel( ReplaceItem.WireModel )
@@ -76,8 +89,7 @@ local function wear()
         outfit:SetParent(owner)
         outfit:SetNoDraw(true)
     elseif (item.SetPlayerModel) then
-        outfit = ents.CreateClientProp()
-        outfit.Group = "clothing_system"
+        outfit = ClientsideModel( item.WireModel, RENDERGROUP_OPAQUE )
         outfit.Class = class
         outfit.SteamID = steamid
         outfit.Module = false
@@ -86,8 +98,7 @@ local function wear()
         outfit:SetParent(owner)
         outfit:SetNoDraw(true)
     elseif (item.Module)then
-        outfit = ents.CreateClientProp()
-        outfit.Group = "clothing_system"
+        outfit = ClientsideModel( item.WireModel, RENDERGROUP_OPAQUE )
         outfit.Class = class
         outfit.SteamID = steamid
         outfit.Module = true
@@ -97,8 +108,17 @@ local function wear()
         outfit:SetNoDraw(true)
     end
 
+    if ( item.GasMask ) then
+        outfit.GasMask = true
+    end
+    if ( item.PowerArmor ) then
+        outfit.PowerArmor = true
+    end
+
     -- Добавление пропа во временный массив
     ply:ClothingSystemAddItem(outfit, steamid)
+
+    outfit = nil
 
     hook.Run( "ClothingSystem.Wear", class, owner)
 end

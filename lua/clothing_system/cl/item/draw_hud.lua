@@ -37,20 +37,18 @@ local function RenderScreenspaceEffects()
     if ( !AccessCheck(ply) ) then return end
 
     -- Проверка на существование массива с одеждой
-    if ( ply:ClothingSystemGetAllItem(PlayerSteamID) ) then
+    if ( LocalPlayer().ClothingSystemWearList[PlayerSteamID] != nil ) then
         -- Цикл по всей одежде игрока
-        for _, outfit in ipairs( ply:ClothingSystemGetAllItem(PlayerSteamID) ) do
-            -- Если класса не существует, не вполняем дальше
+        for _, outfit in pairs( LocalPlayer().ClothingSystemWearList[PlayerSteamID] ) do
             if (!IsValid(outfit)) then return end
-            if ( !ClothingSystem:GetItem(outfit.Class) ) then return end
+
             if ( outfit.SteamID != PlayerSteamID ) then return end
-            -- Если в item есть значение GasMask, и оно true,
-            -- тогда ставим true переменной для отрисовки оверлея
-            if ( ClothingSystem:GetItem(outfit.Class).GasMask ) then
+            
+            if ( outfit.GasMask ) then
                 ply.ClothingSystemData['GasMask'] = true
             end
 
-            if ( ClothingSystem:GetItem(outfit.Class).PowerArmor ) then
+            if ( outfit.PowerArmor ) then
                 ply.ClothingSystemData['PowerArmor'] = true
             end
         end

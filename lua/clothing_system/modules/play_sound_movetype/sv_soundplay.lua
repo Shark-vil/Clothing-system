@@ -75,7 +75,7 @@ local function PlayDmgFall(ply, dmginfo)
     if (!IsValid(ply) || !ply:IsPlayer() || !ply:Alive()) then return end -- Проверка на доступность игрока
     if (!ply.ClothingSystemPlayerIsSpawn) then return end -- Проверка на то, что игрок заспавнился
     if (ply.ClothingSystemPlaysoundData == nil) then return end -- Проверка на существование массива со звуками
-
+    
     -- Проверка на существование массива со звуком, и на то, что урон был нанесён от падения
     if (ply.ClothingSystemPlaysoundData['PowerLandingSound'] && dmginfo:IsDamageType(DMG_FALL)) then
         -- Проверяем тип переменной: массив, или строка

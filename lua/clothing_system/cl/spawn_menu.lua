@@ -36,11 +36,18 @@ hook.Add( "PopulateClothingSystem", "AddEntityContent", function( pnlContent, tr
 			self.PropPanel:SetTriggerSpawnlistChange( false )
 			
 			for k, ent in SortedPairsByMemberValue( v, "PrintName" ) do
+				local img = ""
+
+				if (file.Exists("materials/entities/clothing_system/"..ent.ClassName..".png", "GAME")) then
+					img = "entities/clothing_system/"..ent.ClassName..".png"
+				elseif (file.Exists("materials/entities/clothing_system/"..ent.ClassName..".jpg", "GAME")) then
+					img = "entities/clothing_system/"..ent.ClassName..".jpg"
+				end
 				
 				spawnmenu.CreateContentIcon( "clothing_system", self.PropPanel, {
 					nicename	= ent.PrintName or ent.ClassName,
 					spawnname	= ent.ClassName,
-					material	= "entities/clothing_system/"..ent.ClassName..".png",
+					material	= img,
 					admin		= ent.AdminOnly
 				} )
 				

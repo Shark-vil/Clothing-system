@@ -1,80 +1,58 @@
 -- Отрисовка одежды
-local function DrawClothing(owner)
-    local ply = LocalPlayer() 
-    local PlayerSteamID
-    local OwnerSteamID
-    
-    if (!IsValid(ply) || !ply:IsPlayer()) then return end
-    if (!IsValid(owner) || !owner:IsPlayer()) then return end
 
-    if (game.SinglePlayer()) then
-        PlayerSteamID = "STEAM_0:0:0"
-        OwnerSteamID = "STEAM_0:0:0"
-    else
-        PlayerSteamID = ply:SteamID()
-        OwnerSteamID = owner:SteamID()
+local function DrawClothing(owner)    
+    if (!IsValid(LocalPlayer())) then return end
+    if (!IsValid(owner) || !owner:IsPlayer() || !owner:Alive()) then return end
+    if (owner:IsDormant() || LocalPlayer():IsDormant()) then return end
+    if (LocalPlayer():GetPos():Distance(owner:GetPos()) >= 2000) then 
+        return 
+    elseif (LocalPlayer():GetPos():Distance(owner:GetPos()) >= 500) then
+        if (!LocalPlayer():IsLineOfSightClear(owner:GetPos())) then 
+            return 
+        end
     end
 
     -- Защита от двойной отрисовки
-    if ( ply:ClothingSystemGetDrawing() ) then
+    if ( LocalPlayer():ClothingSystemGetDrawing() ) then
         return
     end
 
-    local NormalAct = {
-        ACT_BUSY_LEAN_LEFT,
-        ACT_BUSY_LEAN_LEFT_ENTRY,
-        ACT_BUSY_LEAN_LEFT_EXIT,
-        ACT_BUSY_LEAN_BACK,
-        ACT_BUSY_LEAN_BACK_ENTRY,
-        ACT_BUSY_LEAN_BACK_EXIT,
-        ACT_BUSY_SIT_GROUND,
-        ACT_BUSY_SIT_GROUND_ENTRY,
-        ACT_BUSY_SIT_GROUND_EXIT,
-        ACT_BUSY_SIT_CHAIR,
-        ACT_BUSY_SIT_CHAIR_ENTRY,
-        ACT_BUSY_SIT_CHAIR_EXIT,
-    }
-
-    -- Проверка на то, что владелец одежды является игроком, что он жив и существует на сервере
-    if ( owner:GetMoveType() == MOVETYPE_NOCLIP ) then
-        local fuckYou = true
-        for i=1, #NormalAct do
-            if (ply:GetSequence() == NormalAct[i]) then fuckYou = false end
-        end
-        if (fuckYou) then return end
-    end
     if ( owner:GetMoveType() == MOVETYPE_OBSERVER ) then return end
-    if ( !owner:IsPlayer() && !owner:Alive() && !IsValid(owner) ) then return end
-
+    
     -- Проверка на наличие массива с информацией об одежде у локального игрока
-    if ( !ply:ClothingSystemGetAllItem(OwnerSteamID) ) then return end
+    local steamid
+
+    if (game.SinglePlayer()) then
+        steamid = "STEAM_0:0:0"
+    else
+        steamid = owner:SteamID()
+    end
+
+    if (LocalPlayer().ClothingSystemWearList == nil || LocalPlayer().ClothingSystemWearList[steamid] == nil) then return end
 
     -- Цикл по массиву с одеждой
-    for k, outfit in ipairs( ply:ClothingSystemGetAllItem(OwnerSteamID) ) do
+    for k, outfit in pairs( LocalPlayer().ClothingSystemWearList[steamid] ) do
         if (!IsValid(outfit)) then return end
         if (outfit.SetPlayerModel) then return end
         if (outfit.Module) then return end
-
-        local item = list.Get("clothing_system")[outfit.Class]
-        if (item == nil) then return end
         
-        if (OwnerSteamID == PlayerSteamID) then
-            ply.ClothingSystemData['DrawOverlay'] = false
+        if (steamid == LocalPlayer():SteamID()) then
+            LocalPlayer().ClothingSystemData['DrawOverlay'] = false
         end
 
         -- Выполняется, если тип связки - "BoneAttach"
         if ( outfit.parentType == "BoneAttach" ) then
             local Pos, Ang = owner:GetBonePosition(outfit.Bone)
 
-            Ang:RotateAroundAxis(Ang:Up(), outfit.ReplaceItem.xAng || item.xAng || 0)
-            Ang:RotateAroundAxis(Ang:Right(), outfit.ReplaceItem.yAng || item.yAng || 0)
-            Ang:RotateAroundAxis(Ang:Forward(), outfit.ReplaceItem.zAng || item.zAng || 0)
-            Pos = Pos-Ang:Right()*(outfit.ReplaceItem.xPos || item.xPos || 0)
-            Pos = Pos-Ang:Up()*(outfit.ReplaceItem.yPos || item.yPos || 0)
-            Pos = Pos-Ang:Forward()*(outfit.ReplaceItem.zPos || item.zPos || 0)
+            Ang:RotateAroundAxis(Ang:Up(), outfit.ReplaceItem.xAng || outfit.xAng || 0)
+            Ang:RotateAroundAxis(Ang:Right(), outfit.ReplaceItem.yAng || outfit.yAng || 0)
+            Ang:RotateAroundAxis(Ang:Forward(), outfit.ReplaceItem.zAng || outfit.zAng || 0)
+            Pos = Pos-Ang:Right()*(outfit.ReplaceItem.xPos || outfit.xPos || 0)
+            Pos = Pos-Ang:Up()*(outfit.ReplaceItem.yPos || outfit.yPos || 0)
+            Pos = Pos-Ang:Forward()*(outfit.ReplaceItem.zPos || outfit.zPos || 0)
             outfit:SetRenderAngles(Ang)
             outfit:SetRenderOrigin(Pos)
-            outfit:SetModelScale(outfit.ReplaceItem.AttachBoneScaleModel || item.AttachBoneScaleModel, 0)
+            outfit:SetModelScale(outfit.ReplaceItem.AttachBoneScaleModel || outfit.AttachBoneScaleModel || 1, 0)
             outfit:SetupBones()
             outfit:DrawModel()
             outfit:SetRenderOrigin()
@@ -86,9 +64,9 @@ local function DrawClothing(owner)
                 outfit:SetParent(owner)
             end
 
-            ply:ClothingSystemSetDrawing(true)
+            LocalPlayer():ClothingSystemSetDrawing(true)
             outfit:DrawModel()
-            ply:ClothingSystemSetDrawing(false)
+            LocalPlayer():ClothingSystemSetDrawing(false)
         end
     end
 end

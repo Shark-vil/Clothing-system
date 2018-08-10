@@ -39,6 +39,9 @@ local function VGUI_Set(class)
     if (ClothingSystem:GetItem(class).Bodygroup != nil) then
         ClothingModel.Entity:SetBodygroup(ClothingSystem:GetItem(class).Bodygroup[1], ClothingSystem:GetItem(class).Bodygroup[2])
     end
+    if (ClothingSystem:GetItem(class).Bodygroups != nil) then
+        ClothingModel.Entity:SetBodygroups(ClothingSystem:GetItem(class).Bodygroups)
+    end
     mn, mx = ClothingModel.Entity:GetRenderBounds()
     size = math.max( size, math.abs( mn.x ) + math.abs( mx.x ) )
     size = math.max( size, math.abs( mn.y ) + math.abs( mx.y ) )

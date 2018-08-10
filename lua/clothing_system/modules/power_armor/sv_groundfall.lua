@@ -14,6 +14,7 @@ local function dmg(ply, dmginfo)
             -- Если есть параметр, выполняем
             if (item.PowerArmor) then
                 if (dmginfo:IsDamageType(DMG_FALL)) then
+                    ply:ViewPunch( Angle( math.random(-20, 20), math.random(-20, 20), math.random(-20, 20) ) )
                     dmginfo:ScaleDamage(0)
                 end
             end
