@@ -1,10 +1,9 @@
-local function dmg(ply, hitgroup, dmginfo)
+local function dmg(ply, dmginfo)
     if (!IsValid(ply) || !ply:IsPlayer() || !ply:Alive()) then return end -- Проверка на то, что игрок доступен для установки параметров
     if (ply.ClothingSystemPlayerBase == nil) then return end -- Проверка на существования базы у игрока
     if (!ply.ClothingSystemPlayerIsSpawn) then return end -- Проверка на то, что игрок заспавнился
 
     local items = ClothingSystem:PlayerGetItems(ply) -- Получение классов всей одежды игрока
-    local NewScale = 1 -- Параметр получения урона
     
     -- Проверка массива на пустоту
     if (!ClothingSystem:TableIsEmpty(items)) then
@@ -19,8 +18,7 @@ local function dmg(ply, hitgroup, dmginfo)
                     for DamageType, value in pairs (item.TakesDamagePercent) do
                         -- Если есть маска, выполняем
                         if (item.GasMask) then
-                            -- Если дамаг типа DMG_RADIATION, выполняем
-                            if (dmginfo:IsDamageType(DMG_RADIATION) || dmginfo:IsDamageType(DMG_ACID)) then
+                            if (dmginfo:IsDamageType(DMG_RADIATION)) then
                                 if (ply.ClothingSystemPlaysoundData != nil) then
                                     if (ply.ClothingSystemPlaysoundData['RadiationSound']) then
                                         if (istable(ply.ClothingSystemPlaysoundData['RadiationSound'][1])) then
@@ -32,8 +30,7 @@ local function dmg(ply, hitgroup, dmginfo)
                                         end
                                     end
                                 end            
-                                NewScale = 0 -- Гасим дамаг
-                                dmginfo:ScaleDamage(NewScale)
+                                dmginfo:ScaleDamage(0)
                             end
                         end
                     end
@@ -42,4 +39,4 @@ local function dmg(ply, hitgroup, dmginfo)
         end
     end
 end
-hook.Add("ScalePlayerDamage", "ClothingSystemModule.EntityTakeDamageGasMask", dmg)
+ClothingSystem.Tools.Hooks.AddHook("EntityTakeDamage", dmg)

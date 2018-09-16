@@ -1,1 +1,0 @@
-print("[ClothingSystem] Init module - Storage System: (SV) sv_init.lua")

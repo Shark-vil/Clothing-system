@@ -6,12 +6,10 @@ local function regeneration()
         if (ply.ClothingSystemPlayerBase == nil) then return end -- Проверка на существования базы у игрока
         if (!ply.ClothingSystemPlayerIsSpawn) then return end -- Проверка на то, что игрок заспавнился
         
-        local items = ClothingSystem:PlayerGetItems(ply) -- Получение классов всей одежды игрока
-        
         -- Проверка массива на пустоту
-        if (!ClothingSystem:TableIsEmpty(items)) then
+        if (#ply.ClothingSystemWearList != 0) then
             -- Цикл по всем элементам массива
-            for _, class in pairs(items) do
+            for _, class in pairs(ply.ClothingSystemWearList) do
                 local item = list.Get("clothing_system")[class] -- Получаем массив одежды по классу
                 
                 -- Выполняем, если параметр регенерации присутствует

@@ -3,4 +3,4 @@ local function loadDataWear()
 
     ply.ClothingSystemWearList = {}
 end
-hook.Add("PreCleanupMap", "ClothingSystem.loadDataWear", loadDataWear)
+ClothingSystem.Tools.Hooks.AddHook("PreCleanupMap", loadDataWear)

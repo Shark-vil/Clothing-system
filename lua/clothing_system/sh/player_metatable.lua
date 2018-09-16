@@ -17,37 +17,39 @@ function playerMeta:ClothingSystemConstruct(BoneType, type)
         self.ClothingSystemPlayerIsSpawn = true
     end
 
+    if (self.ClothingSystemPlayerSteamID64 == nil) then
+        if (game.SinglePlayer()) then
+            self.ClothingSystemPlayerSteamID64 = "STEAM_0:0:0"
+        else
+            self.ClothingSystemPlayerSteamID64 = self:SteamID64()
+        end
+    end
+
+    if (self.ClothingSystemPlayerSteamID == nil) then
+        if (game.SinglePlayer()) then
+            self.ClothingSystemPlayerSteamID = "STEAM_0:0:0"
+        else
+            self.ClothingSystemPlayerSteamID = self:SteamID()
+        end
+    end
+
     -- Для хранения данных
     self.ClothingSystemData = {}
 
     self.ClothingSystemData['GasMask'] = false
-    self.ClothingSystemData['PowerArmor'] = false
+    self.ClothingSystemData['ActiveOverlay'] = false
 end
 
 function playerMeta:ClothingSystemGetNormalSteamID64()
-    if (!IsValid(self) || !self:IsPlayer()) then return end
-    local PlayerSteamID
+    if (!IsValid(self) || !self:IsPlayer() || !self.ClothingSystemPlayerIsSpawn) then return end
 
-    if (game.SinglePlayer()) then
-        PlayerSteamID = "STEAM_0:0:0"
-    else
-        PlayerSteamID = self:SteamID64()
-    end
-
-    return PlayerSteamID
+    return self.ClothingSystemPlayerSteamID64
 end
 
 function playerMeta:ClothingSystemGetNormalSteamID()
-    if (!IsValid(self) || !self:IsPlayer()) then return end
-    local PlayerSteamID
+    if (!IsValid(self) || !self:IsPlayer() || !self.ClothingSystemPlayerIsSpawn) then return end
 
-    if (game.SinglePlayer()) then
-        PlayerSteamID = "STEAM_0:0:0"
-    else
-        PlayerSteamID = self:SteamID()
-    end
-
-    return PlayerSteamID
+    return self.ClothingSystemPlayerSteamID
 end
 
 
@@ -207,8 +209,9 @@ function playerMeta:ClothingSystemRemoveItem(class, steamid)
         local GenerateNormalArray = {}
         local index = 1
         local status = false
+        local overlay = false
 
-        for k, v in ipairs(self.ClothingSystemWearList[steamid]) do
+        for k, v in pairs(self.ClothingSystemWearList[steamid]) do
             if (v.SteamID == steamid && v.Class == class) then
                 v:Remove()
                 status = true
@@ -220,6 +223,16 @@ function playerMeta:ClothingSystemRemoveItem(class, steamid)
 
         self.ClothingSystemWearList[steamid] = GenerateNormalArray
 
+        if (steamid == self:ClothingSystemGetNormalSteamID()) then
+            self.ClothingSystemData['ActiveOverlay'] = false
+            for _, v in pairs(self.ClothingSystemWearList[steamid]) do
+                if (v.Overlay) then
+                    self.ClothingSystemData['ActiveOverlay'] = v.Overlay
+                    break
+                end
+            end
+        end
+        
         return status
     else
         error("This method is designed to work only on the client side!")
@@ -292,9 +305,7 @@ function playerMeta:ClothingSystemDropItem(class)
 
         if ( !self:ClothingSystemRemoveItem(class, steamid)) then return end
 
-        net.Start("ClothingSystem.DropItem")
-            net.WriteString(class)
-        net.SendToServer()
+        ClothingSystem.Tools.Network.Send("SendToServer", "DropItem", {class = class})
     else
         error("This method is designed to work only on the client side!")
     end
@@ -347,9 +358,10 @@ function playerMeta:ClothingSystemSetCustomHands()
         local simplemodel = player_manager.TranslateToPlayerModelName( self:GetModel() )
         local info = player_manager.TranslatePlayerHands( simplemodel )
         if info then
-            self:GetHands():SetModel( info.model )
-            self:GetHands():SetSkin( info.skin )
-            self:GetHands():SetBodyGroups( info.body )
+            local hands = self:GetHands()
+            hands:SetModel( info.model )
+            hands:SetSkin( info.skin )
+            hands:SetBodyGroups( info.body )
         end
     else
         error("This method is designed to work only on the server side!")

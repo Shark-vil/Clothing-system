@@ -1,6 +1,4 @@
-print("[ClothingSystem] Init module - Storage System: (SV) sv_chat_commands.lua")
-
-hook.Add( "PlayerSay", "ClothingStorageSystem.ChatCommands", function( ply, text, team )
+ClothingSystem.Tools.Hooks.AddHook("ClothingSystem.PlayerSay", function( ply, text, team )
     local command, object, item, class, finalTable, bodygroups, data, tr, BlackListWeapons, steamid
 
     command = "/storage"
@@ -15,6 +13,7 @@ hook.Add( "PlayerSay", "ClothingStorageSystem.ChatCommands", function( ply, text
         end
 
         local items = ClothingSystem:PlayerGetItems(ply)
+ 
         if ( !ClothingSystem:TableIsEmpty(items) ) then
             for _, class in pairs(items) do
                 if (data[class] == nil) then
@@ -31,19 +30,16 @@ hook.Add( "PlayerSay", "ClothingStorageSystem.ChatCommands", function( ply, text
             end
             file.Write("clothing_system/pockets/"..steamid..".dat", util.TableToJSON(data, true))
         else
-            ply:AddText("You do not have any clothing!")
+            ply:AddText(ClothingSystem.Language.vguiMenu_Storage_noClothes)
             return ""
         end
         
-        net.Start("ClothingStorageSystem.OpenStorageMenu")
-        net.WriteTable(data)
-        net.Send(ply)
+        ClothingSystem.Tools.Network.Send("send", "ClothingStorageSystem.OpenStorageMenu", data, nil, ply)
         return ""
     end
     
     command = "/storadd"
 	if ( string.Left(string.lower(text), string.len(command)) == string.lower(command) ) then
-        -- tr = util.TraceLine( util.GetPlayerTrace(ply) )
         tr = ClothingStorageSystem:GetTrace(ply)
         
         if (IsValid(tr.Entity)) then
@@ -58,17 +54,15 @@ hook.Add( "PlayerSay", "ClothingStorageSystem.ChatCommands", function( ply, text
 
                 ClothingStorageSystem:AddProtect(ply, finalTable)
                 
-                net.Start("ClothingStorageSystem.OpenAddItemMenu")
-                net.WriteTable(finalTable)
-                net.Send(ply)
+                ClothingSystem.Tools.Network.Send("send", "ClothingStorageSystem.OpenAddItemMenu", finalTable, nil, ply)
             else
                 ply:SendLua([[
-                    chat.AddText("You can not pick up this object.")
+                    chat.AddText("]]..ClothingSystem.Language.vguiMenu_Storage_notPickUp..[[.")
                 ]])
             end
         else
             ply:SendLua([[
-                chat.AddText("You can not pick up this object.")
+                chat.AddText("]]..ClothingSystem.Language.vguiMenu_Storage_notPickUp..[[.")
             ]])
         end
 
@@ -77,11 +71,7 @@ hook.Add( "PlayerSay", "ClothingStorageSystem.ChatCommands", function( ply, text
     
     command = "/storwep"
 	if ( string.Left(string.lower(text), string.len(command)) == string.lower(command) ) then
-        BlackListWeapons = {
-            "weapon_physgun",
-        }
-        
-        if (IsValid(ply) && ply:Alive() && IsValid(ply:GetActiveWeapon()) && !table.HasValue(BlackListWeapons, ply:GetActiveWeapon():GetClass())) then
+        if (IsValid(ply) && ply:Alive() && IsValid(ply:GetActiveWeapon())) then
             object = ply:GetActiveWeapon()
             class = object:GetClass()
             item = ClothingStorageSystem:GetItem(class)
@@ -93,17 +83,15 @@ hook.Add( "PlayerSay", "ClothingStorageSystem.ChatCommands", function( ply, text
 
                 ClothingStorageSystem:AddProtect(ply, finalTable)
                 
-                net.Start("ClothingStorageSystem.OpenAddItemMenu")
-                net.WriteTable(finalTable)
-                net.Send(ply)
+                ClothingSystem.Tools.Network.Send("send", "ClothingStorageSystem.OpenAddItemMenu", finalTable, nil, ply)
             else
                 ply:SendLua([[
-                    chat.AddText("You can not pick up this object.")
+                    chat.AddText("]]..ClothingSystem.Language.vguiMenu_Storage_notPickUp..[[.")
                 ]])
             end
         else
             ply:SendLua([[
-                chat.AddText("You can not pick up this object.")
+                chat.AddText("]]..ClothingSystem.Language.vguiMenu_Storage_notPickUp..[[.")
             ]])
         end
 

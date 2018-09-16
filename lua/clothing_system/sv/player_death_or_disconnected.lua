@@ -6,8 +6,10 @@ local function Death(ply)
         for _, class in pairs(items) do
             local itm = ClothingSystem:GetItem(class)
 
-            if (itm.Death) then
-                itm.Death(ply, class)
+            if ( itm != nil && !isbool(itm) && itm != false ) then
+                if (itm.Death != nil) then
+                    itm.Death(ply, class)
+                end
             end
         end
     end
@@ -19,27 +21,25 @@ local function Death(ply)
 
     ply.ClothingSystemPlayerBase = ""
 
-    net.Start("ClothingSystem.DeadOrDisconnected")
-        net.WriteString(ply:SteamID())
-    net.Broadcast()
+    ClothingSystem.Tools.Network.Send("Broadcast", "DeadOrDisconnected", {steamid = ply:SteamID()})
 end
-hook.Add( "PlayerDeath", "ClothingSystem.PlayerDeathReset", Death)
+ClothingSystem.Tools.Hooks.AddHook("PlayerDeath", Death)
 
 local function Disconnected(ply)
-    local items = ClothingSystem:PlayerGetItems(ply)
+    local playerSaveInfo = ply
+    local steamid = playerSaveInfo:SteamID()
+    local items = ClothingSystem:PlayerGetItems(playerSaveInfo)
 
     if ( !ClothingSystem:TableIsEmpty(items) ) then
         for _, class in pairs(items) do
             local itm = ClothingSystem:GetItem(class)
 
             if (itm.Disconnected) then
-                itm.Disconnected(ply, class)
+                itm.Disconnected(playerSaveInfo, class)
             end
         end
     end
 
-    net.Start("ClothingSystem.DeadOrDisconnected")
-        net.WriteString(ply:SteamID())
-    net.Broadcast()
+    ClothingSystem.Tools.Network.Send("Broadcast", "DeadOrDisconnected", {steamid = steamid})
 end
-hook.Add( "PlayerDisconnected", "ClothingSystem.PlayerDisconnected", Disconnected)
+ClothingSystem.Tools.Hooks.AddHook("PlayerDisconnected", Disconnected)

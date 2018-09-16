@@ -10,7 +10,7 @@ local function VGUI_Set(class)
     local size = 0
     
     local Body = vgui.Create( "DFrame" )
-    Body:SetSize( ScrW()/2, ScrH()/2 )
+    Body:SetSize( ScrW()/2.5, ScrH()/2.2 )
     Body:SetTitle( "" )
     Body:SetDraggable( true )
     Body:MakePopup()
@@ -21,14 +21,14 @@ local function VGUI_Set(class)
     end
     Body.Paint = function()
         draw.RoundedBox( 8, 0, 0, Body:GetWide(), Body:GetTall(), Color( 0, 0, 0, 150 ) )
-        draw.DrawText("Actions", "Trebuchet18", 10, 5, Color(255,255,255,255), TEXT_ALIGN_LEFT)
+        draw.DrawText(ClothingSystem.Language.vguiMenu_2_Title, "Trebuchet18", 10, 5, Color(255,255,255,255), TEXT_ALIGN_LEFT)
         
-        draw.RoundedBox( 8, ScrW()/4+30, Py, 250, 200, Color( 255, 255, 255, 100 ) )
+        draw.RoundedBox( 8, ScrW()/6+30, Py, 250, 200, Color( 255, 255, 255, 100 ) )
     end
 
     
     local ClothingModel = vgui.Create( "DModelPanel", Body )
-    ClothingModel:SetPos( ScrW()/4+30, Py )
+    ClothingModel:SetPos( ScrW()/6+30, Py )
     ClothingModel:SetSize( 250, 200 )
     ClothingModel:SetFOV(fov)
     ClothingModel:SetModel( ClothingSystem:GetItem(class).WireModel )
@@ -51,8 +51,8 @@ local function VGUI_Set(class)
     ClothingModel:SetLookAt( ( mn + mx ) * 0.5 )
     
     local ClothingModelFov = vgui.Create( "DNumSlider", Body )
-    ClothingModelFov:SetPos( ScrW()/4-100, 200+25 )		
-    ClothingModelFov:SetSize( ScrW()/4+30, 15 )		
+    ClothingModelFov:SetPos( ScrW()/6-80, 200+25 )		
+    ClothingModelFov:SetSize( ScrW()/6+130, 15 )		
     ClothingModelFov:SetMin( 0 )			
     ClothingModelFov:SetMax( 100 )		
     ClothingModelFov:SetDecimals( 0 )		
@@ -75,9 +75,9 @@ local function VGUI_Set(class)
     end
 
     local Button = vgui.Create( "DButton", Body )
-    Button:SetText( "Drop" )
+    Button:SetText( ClothingSystem.Language.vguiMenu_2_Drop )
     Button:SetPos( Px, Py+PxAdd )
-    Button:SetSize( ScrW()/4, 50 )
+    Button:SetSize( ScrW()/6, 25 )
     Button.DoClick = function ()
         ply:ClothingSystemDropItem(class)
         Body:Remove()
@@ -90,28 +90,27 @@ local function VGUI_Set(class)
         end)
     end
 
-    PxAdd=PxAdd+50
+    PxAdd=PxAdd+25
     local Button = vgui.Create( "DButton", Body )
-    Button:SetText( "View inventory" )
+    Button:SetText( ClothingSystem.Language.vguiMenu_2_Inventory )
     Button:SetPos( Px, Py+PxAdd )
-    Button:SetSize( ScrW()/4, 50 )
+    Button:SetSize( ScrW()/6, 25 )
     Button.DoClick = function ()
         RunConsoleCommand("say", "/storage")
         Body:Remove()
     end
 
-    PxAdd=PxAdd+50
+    PxAdd=PxAdd+25
     local Button = vgui.Create( "DButton", Body )
-    Button:SetText( "Wear of clothes" )
+    Button:SetText( ClothingSystem.Language.vguiMenu_2_Worn )
     Button:SetPos( Px, Py+PxAdd )
-    Button:SetSize( ScrW()/4, 50 )
+    Button:SetSize( ScrW()/6, 25 )
     Button.DoClick = function ()
-        ply:AddText("Function in development.")
+        ply:AddText(ClothingSystem.Language.vguiInDevelopment)
     end
 end
 
 local function VGUI()
-    local ItemList = net.ReadTable()
     local ply = LocalPlayer()
     local PlayerSteamID = ply:ClothingSystemGetNormalSteamID()
     
@@ -123,14 +122,14 @@ local function VGUI()
     Body:Center()
     Body.Paint = function()
         draw.RoundedBox( 8, 0, 0, Body:GetWide(), Body:GetTall(), Color( 0, 0, 0, 150 ) )
-        draw.DrawText("Your clothes", "Trebuchet18", 10, 5, Color(255,255,255,255), TEXT_ALIGN_LEFT)
+        draw.DrawText(ClothingSystem.Language.vguiMenu_1_Title, "Trebuchet18", 10, 5, Color(255,255,255,255), TEXT_ALIGN_LEFT)
     end
 
     local ClothList = vgui.Create( "DListView", Body )
     ClothList:Dock( FILL )
     ClothList:SetMultiSelect( false )
-    ClothList:AddColumn( "Class" )
-    ClothList:AddColumn( "Name" )
+    ClothList:AddColumn( ClothingSystem.Language.vguiMenu_1_Class )
+    ClothList:AddColumn( ClothingSystem.Language.vguiMenu_1_Name )
 
     if (ply:ClothingSystemGetAllItem(PlayerSteamID)) then
         local pt = ply:ClothingSystemGetAllItem(PlayerSteamID)
@@ -150,8 +149,4 @@ local function VGUI()
         VGUI_Set(pnl:GetColumnText(1))
     end
 end
-net.Receive("ClothingSystem.VGUI", VGUI)
-
-concommand.Add("clothing_menu", function()
-    RunConsoleCommand("open_clothing_menu")
-end)
+concommand.Add("open_clothing_menu", VGUI)

@@ -1,9 +1,7 @@
-print("[ClothingSystem] Init module - Storage System: (SH) sh_meta.lua")
-
-ClothingStorageSystem = {}
+ClothingStorageSystem = ClothingStorageSystem || {}
 
 if SERVER then
-    ClothingStorageSystemProtectArray = {}
+    ClothingStorageSystemProtectArray = ClothingStorageSystemProtectArray || {}
 end
 
 local META = {}
@@ -15,12 +13,16 @@ META.Add = function(self, array)
     local _spawn = array['spawn'] || function(ply, array, ent)end
     local _serverSave = array['server'] || function(ply, ent) return {} end
     local _clientSave = array['client'] || function(ply, ent) return {} end
+    local _giveAmmo = array['giveAmmo'] || function(ply, class) return {} end
     local _isWeapon = array['weapon'] || false
 
     if (_class != nil) then
         if (_isWeapon) then
-            _spawn = function(ply, array, ent)
-                ClothingStorageSystem:WeaponGive(ply, array, ent)
+            -- _spawn = function(ply, array, ent)
+            --     ClothingStorageSystem:WeaponGive(ply, array, ent)
+            -- end
+            _giveAmmo = function(ply, array, ent, stat)
+                ClothingStorageSystem:WeaponGive(ply, array, ent, stat)
             end
             _serverSave = function(ply, ent)
                 return ClothingStorageSystem:WeaponSave(ply, ent)
@@ -32,6 +34,7 @@ META.Add = function(self, array)
             spawn = _spawn,
             serverSave = _serverSave,
             clientSave = _clientSave,
+            giveAmmo = _giveAmmo,
         } )
 
         -- AddItems[_class] = {
@@ -98,7 +101,7 @@ if SERVER then
                     if (game.SinglePlayer()) then
                         ply:ConCommand("disconnect")
                     else
-                        ply:Kick("[ClothingSystem] - Detected net cheat.")
+                        ply:Kick("[ClothingSystem][Protected] - Detected net cheat.")
                     end
                 end
                 return false
@@ -112,7 +115,7 @@ if SERVER then
                 if (game.SinglePlayer()) then
                     ply:ConCommand("disconnect")
                 else
-                    ply:Kick("[ClothingSystem] - Detected net cheat.")
+                    ply:Kick("[ClothingSystem][Protected] - Detected net cheat.")
                 end
             end
             return false
@@ -146,12 +149,67 @@ if SERVER then
             ['clip2'] = clip2,
         }
     end
-    META.WeaponGive = function (self, ply, array, weapon)
-        ply:SetAmmo( array['ammo'], weapon:GetPrimaryAmmoType())
-        weapon:SetClip1(array['clip1'])
-        weapon:SetClip2(array['clip2'])
+    META.WeaponPickup = function (self, ply, class, ammo, clip1, clip2, oldclip1, oldclip2)
+        timer.Simple(0.2, function()
+            if (!IsValid(ply) || !ply:Alive()) then return end
+            local weapon = ply:GetWeapon(class)
+            local ammoType = weapon:GetPrimaryAmmoType()
 
+            if (oldclip1 <= 0) then
+                weapon:SetClip1(clip1)
+                ply:SetAmmo( (ammo), ammoType)
+            else
+                ply:SetAmmo( (ammo+clip1), ammoType)
+            end
+            weapon:SetClip2(oldclip2+clip2)
+        end)
+        -- GetConVar("sv_manualweaponpickup"):SetInt(1)
         return true
+    end
+    META.WeaponGive = function (self, ply, array, weapon, stat)
+        if (stat) then
+            local isWeapon = false
+            local ammo = 0
+            local clip1 = 0
+            local clip2 = 0
+            local ammoType = nil
+            local gun = NULL
+
+            for k, v in pairs(ply:GetWeapons()) do
+                if (v:GetClass() == weapon) then
+                    ammo = ply:GetAmmoCount(v:GetPrimaryAmmoType())
+                    clip1 = v:Clip1()
+                    clip2 = v:Clip2()
+                    isWeapon  = true
+                end
+            end
+        
+            if (!isWeapon) then
+                gun = ply:Give(weapon, true)
+            end
+
+            timer.Simple(0.1, function()
+                if (!IsValid(ply) || !ply:Alive()) then return end
+                gun = ply:GetWeapon(weapon)
+                ammoType = gun:GetPrimaryAmmoType()
+
+                if (clip1 <= 0) then
+                    gun:SetClip1(array['clip1'])
+                    ply:SetAmmo( (array['ammo']+ammo), ammoType)
+                else
+                    ply:SetAmmo( (array['ammo']+ammo+array['clip1']), ammoType)
+                end
+                gun:SetClip2(array['clip2']+clip2)
+                ply:SelectWeapon(weapon)
+            end)
+            return true
+        else
+            weapon:SetClip1(array['clip1'])
+            weapon:SetClip2(array['clip2'])
+            return true
+        end
+
+        return false
     end
 else
 
@@ -160,3 +218,5 @@ end
 
 META.__index = META
 setmetatable(ClothingStorageSystem, META)
+
+include("itemsadd.lua")

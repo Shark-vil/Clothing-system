@@ -1,19 +1,49 @@
-hook.Add( "PopulateClothingSystem", "AddEntityContent", function( pnlContent, tree, node )
+local function IsAdminOnly(Clothing)
+	if (Clothing.OnlySteamID != nil && (istable(Clothing.OnlySteamID) || isstring(Clothing.OnlySteamID))) then
+		if (istable(Clothing.OnlySteamID)) then
+			if (table.Count(Clothing.OnlySteamID) != 0) then
+				return true
+			end
+		elseif (isstring(Clothing.OnlySteamID)) then
+			if (string.len(Clothing.OnlySteamID) != 0) then
+				return true
+			end
+		end
+	elseif (Clothing.OnlyAdmin != nil && isbool(Clothing.OnlyAdmin)) then
+		if (Clothing.OnlyAdmin) then
+			return true
+		end
+	elseif (Clothing.GroupDressList != nil && (istable(Clothing.GroupDressList) || isstring(Clothing.GroupDressList))) then
+		if (istable(Clothing.GroupDressList)) then
+			if (table.Count(Clothing.GroupDressList) != 0) then
+				return true
+			end
+		elseif (isstring(Clothing.GroupDressList)) then
+			if (string.len(Clothing.GroupDressList) != 0) then
+				return true
+			end
+		end
+	end
+
+	return false
+end
+
+ClothingSystem.Tools.Hooks.AddHook("PopulateClothingSystem", function( pnlContent, tree, node )
 
 	local Categorised = {}
 
 	-- Add this list into the tormoil
 	local Clothing = list.Get( "clothing_system" )
-	if Clothing then
+	if Clothing then	
 		for k, v in pairs( Clothing ) do
-
 			v.Category = v.Category or "Other"
 			Categorised[ v.Category ] = Categorised[ v.Category ] or {}
 			v.ClassName = k
 			v.PrintName = v.Name
-			v.AdminOnly = v.AdminOnly || false
+			v.AdminOnly = IsAdminOnly(v)
 			table.insert( Categorised[ v.Category ], v )
 
+			-- print("ADD = ".. v.Name .." , "..tostring(IsAdminOnly(v)))
 		end
 	end
 	--
@@ -91,17 +121,13 @@ spawnmenu.AddContentType( "clothing_system", function( container, obj )
 		if (obj.admin) then
 			if (!LocalPlayer():IsAdmin() && !LocalPlayer():IsSuperAdmin()) then return end
 		end
-		net.Start("ClothingSystem.SpawnEntity")
-			net.WriteString( obj.spawnname )
-		net.SendToServer()
-		-- hook.Call("ClothingSystemSpawnEntity", nil, base.Class, ply)
-
+		ClothingSystem.Tools.Network.Send("SendToServer", "SpawnEntity", {class = obj.spawnname})
 		surface.PlaySound( "ui/buttonclickrelease.wav" )
 	end
 	icon.OpenMenu = function( icon )
 
 		local menu = DermaMenu()
-			menu:AddOption( "Copy to Clipboard", function() SetClipboardText( obj.spawnname ) end )
+			menu:AddOption( ClothingSystem.Language.spawnMenuCopy, function() SetClipboardText( obj.spawnname ) end )
 		menu:Open()
 
 	end
@@ -112,16 +138,3 @@ spawnmenu.AddContentType( "clothing_system", function( container, obj )
 
 	return icon
 end )
-
-net.Receive("ClothingSystem.PlayerSpawnEntity.DrawTextToClient", function()
-	local item_index = net.ReadFloat()
-	local item_class = net.ReadString()
-
-	timer.Simple(0.2, function()
-		for _, item in ipairs(ents.GetAll()) do
-			if ( item:EntIndex() == item_index ) then
-				item.Class = item_class
-			end
-		end
-	end)
-end)

@@ -68,7 +68,8 @@ local function WaterSoundEffect()
         end
     end
 end
-hook.Add("Think", "ClothingSystem.WaterSoundEffect", WaterSoundEffect)
+ClothingSystem.Tools.Hooks.AddHook("Think", WaterSoundEffect)
+-- timer.Create("ClothingSystem.Module.PlaySoundMovetype.sv_soundplay.WaterSoundEffect", 0.1, 0, WaterSoundEffect)
 
 -- Звук удара об землю
 local function PlayDmgFall(ply, dmginfo)
@@ -88,7 +89,7 @@ local function PlayDmgFall(ply, dmginfo)
         end
     end
 end
-hook.Add("EntityTakeDamage","ClothingSystemModule.PlaySoundTakeDamageFALL", PlayDmgFall)
+ClothingSystem.Tools.Hooks.AddHook("EntityTakeDamage", PlayDmgFall)
 
 -- Звук прыжка и касания
 local function PlayJump()
@@ -162,7 +163,8 @@ local function PlayJump()
         end
     end
 end
-hook.Add("Think", "ClothingSystem.PlayJump", PlayJump)
+ClothingSystem.Tools.Hooks.AddHook("Think", PlayJump)
+-- timer.Create("ClothingSystem.Module.PlaySoundMovetype.sv_soundplay.PlayJump", 0.1, 0, PlayJump)
 
 -- Звук дыхания через маску
 local function GasMask()
@@ -187,7 +189,8 @@ local function GasMask()
         ply.ClothingSystemPlaysoundData['isGasMaskCurTime'] = CurTime() + SoundDuration(p)
     end
 end
-hook.Add("Think", "ClothingSystem.GasMaskSound", GasMask)
+-- ClothingSystem.Tools.Hooks.AddHook("Think", GasMask)
+timer.Create("ClothingSystem.Module.PlaySoundMovetype.sv_soundplay.GasMask", 4, 0, GasMask)
 
 -- Звуки при ходьбе и беге
 local function PlayFootstep( ply )
@@ -226,10 +229,10 @@ local function PlayFootstep( ply )
             local p = ply.ClothingSystemPlaysoundData['WalkSound'][1][math.random(1, ln)] -- Вылавливание рандомного элемента массива
             ply:EmitSound(p) -- Проигрыванеи звука
         else
-            ply:EmitSound(ply.ClothingSystemPlaysoundData['RunSound'][1]) -- Проигрыванеи звука
+            ply:EmitSound(ply.ClothingSystemPlaysoundData['WalkSound'][1]) -- Проигрыванеи звука
         end
 
         return true
     end
 end
-hook.Add("PlayerFootstep", "ClothingSystem.PlayerFootstep", PlayFootstep)
+ClothingSystem.Tools.Hooks.AddHook("PlayerFootstep", PlayFootstep)

@@ -1,7 +1,7 @@
 -- Вызывается при каждом спавне
 local function PlayerSpawn(ply)
     if (ply:SteamID() == "BOT") then return end
-    
+
     local tm = 4
 
     if (ply.ClothingSystemPlayerIsSpawn) then
@@ -10,20 +10,16 @@ local function PlayerSpawn(ply)
     
     timer.Simple(tm, function()
         if (!ply.ClothingSystemPlayerIsSpawn) then
-            ply:AddText("The clothing system is loaded.")
+            ply:AddText(ClothingSystem.Language.initial..".")
+            ClothingSystem:log("The player <"..tostring(ply:Nick()).."> connected to the server.")
 
-            -- Обновление типа костей и массивов игрока
             ClothingSystem:UpdateBoneType(ply)
 
-            -- Цикл по всем игрокам
             for _, player in ipairs(player.GetAll()) do
-                -- Проверка на то, что игрок не является нашим игроком
                 if ( player != ply ) then
-                    -- Получаем всю одежду игрока
                     local items = ClothingSystem:PlayerGetItems(player)
 
-                    -- Проверка на то, что массив не пустой
-                    if ( !ClothingSystem:TableIsEmpty(items) ) then
+                    if ( #items != 0 ) then
                         for _, class in pairs(items) do
                             ClothingSystem:WearPartsInitialSpawn(class, player, ply, "send", false)
                         end
@@ -36,27 +32,23 @@ local function PlayerSpawn(ply)
 
         timer.Simple(tm, function()
             if (ply:Alive()) then
-                -- Получаем всю одежду игрока
                 local items = ClothingSystem:PlayerGetItems(ply)
-
-                -- Выполняем, если массив не пустой
-                if ( !ClothingSystem:TableIsEmpty(items) ) then
+                ply.ClothingSystemWearList = items
+                if ( #items != 0 ) then
                     for _, class in pairs(items) do
-                        -- Проверяем, есть ли элемент в списке одежды сервера
-                        if ( !ClothingSystem:GetItem(class) ) then return end
+                        local item = list.Get("clothing_system")[class]
+                        if ( item != nil && istable(item) && table.Count(item) != 0 ) then
+                            ClothingSystem:log("Player <"..tostring(ply:Nick())..":"..tostring(ply:SteamID()).."> put on a thing called <"..tostring(item.Name)..">.")
+                            if ( item.Equip ) then
+                                item.Equip(ply, class)
+                            end
 
-                        -- Проверяем, есть ли функция экипировки
-                        if ( ClothingSystem:GetItem(class).Equip ) then
-                            -- Если есть, вызываем
-                            ClothingSystem:GetItem(class).Equip(ply, class)
+                            ClothingSystem:WearParts(class, ply, nil, "broadcast", false)
                         end
-
-                        -- Рисуем одежду игрока на каждом клиенте, включая самого игрока
-                        ClothingSystem:WearParts(class, ply, nil, "broadcast", false)
                     end
                 end
             end
         end)
     end)
 end
-hook.Add("PlayerSpawn", "ClothingSystem.PlayerSpawn", PlayerSpawn)
+ClothingSystem.Tools.Hooks.AddHook("PlayerSpawn", PlayerSpawn)

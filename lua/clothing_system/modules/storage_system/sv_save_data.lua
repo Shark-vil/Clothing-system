@@ -1,7 +1,5 @@
-print("[ClothingSystem] Init module - Storage System: (SV) sv_save_data.lua")
-
-net.Receive("ClothingStorageSystem.SendToServerAddFile", function (len, ply)
-    local DATA = net.ReadTable()
+ClothingSystem.Tools.Network.AddNetwork("ClothingStorageSystem.SendToServerAddFile", function (len, data, ply)
+    local DATA = data
     if ( ClothingStorageSystem:CheckProtect(ply, DATA) ) then
         local dataSaver = {}
         local steamid
@@ -9,7 +7,7 @@ net.Receive("ClothingStorageSystem.SendToServerAddFile", function (len, ply)
         local Entity = ents.GetByIndex(DATA['entityID'])
         if (!IsValid(Entity)) then
             ply:SendLua([[
-                chat.AddText("Этот объект был уничтожен или подобран другим игроком!")
+                chat.AddText("]]..ClothingSystem.Language.vguiMenu_Storage_EntityDestroyed..[[!")
             ]])
             return
         end
@@ -92,17 +90,17 @@ net.Receive("ClothingStorageSystem.SendToServerAddFile", function (len, ply)
             end
 
             _weight = item.weight || 0
-            print(_file[DATA['class']][DATA['pocket']]['weight'])
-            print(_weight)
+
             if (_file[DATA['class']][DATA['pocket']]['weight'] < _weight) then
                 ply:SendLua([[
-                    chat.AddText("В кармане мало места!")
+                    chat.AddText("]]..ClothingSystem.Language.vguiMenu_Storage_noFreeSlot..[[!")
                 ]])
                 return
             else
                 _file[DATA['class']][DATA['pocket']]['weight'] = _file[DATA['class']][DATA['pocket']]['weight'] - _weight
             end
             file.Write("clothing_system/pockets/"..steamid..".dat", util.TableToJSON(_file, true))
+            Entity:Remove()
         else
             _file = {}
             _file[DATA['class']] = {}
@@ -133,38 +131,37 @@ net.Receive("ClothingStorageSystem.SendToServerAddFile", function (len, ply)
             print(_weight)
             if (_file[DATA['class']][DATA['pocket']]['weight'] < _weight) then
                 ply:SendLua([[
-                    chat.AddText("В кармане мало места!")
+                    chat.AddText("]]..ClothingSystem.Language.vguiMenu_Storage_noFreeSlot..[[!")
                 ]])
                 return
             else
                 _file[DATA['class']][DATA['pocket']]['weight'] = _file[DATA['class']][DATA['pocket']]['weight'] - _weight
             end
             file.Write("clothing_system/pockets/"..steamid..".dat", util.TableToJSON(_file, true))
+            Entity:Remove()
         end
-
-        Entity:Remove()
     else
         for _, user in ipairs(player.GetAll()) do
             if (user:IsAdmin() || user:IsSuperAdmin()) then
                 if (ClothingStorageSystemProtectArray.playerDetectedCheaters[ply:SteamID()] < 2) then
                     user:SendLua([[
-                        chat.AddText(Color(255, 0, 0), "ВНИМАНИЕ! Игрок ]]..ply:Nick()..[[ подозревается в читерстве!")
+                        chat.AddText(Color(255, 0, 0), "[ClothingSystem][Protected]: The reason for the detection, the player: ]]..ply:Nick()..[[")
                     ]])
                     user:SendLua([[
-                        chat.AddText(Color(255, 0, 0), "Попыток повторного нарушения: ]]..ClothingStorageSystemProtectArray.playerDetectedCheaters[ply:SteamID()]..[[/2")
+                        chat.AddText(Color(255, 0, 0), "[ClothingSystem][Protected]: Attempts to violate: ]]..ClothingStorageSystemProtectArray.playerDetectedCheaters[ply:SteamID()]..[[/2")
                     ]])
                     user:SendLua([[
-                        chat.AddText(Color(0, 255, 0), ">>> STEAMID: ]]..ply:SteamID()..[[ <<<")
+                        chat.AddText(Color(0, 255, 0), "[ClothingSystem][Protected]: >>> STEAMID: ]]..ply:SteamID()..[[ <<<")
                     ]])
                     user:SendLua([[
-                        chat.AddText(Color(255, 216, 23), "[StorageSystem] Anti-Cheat: зафиксирована попытка изменения NET параметров!")
+                        chat.AddText(Color(255, 216, 23), "[ClothingSystem][Protected]: Attempt to change no parameters!")
                     ]])
                 else
                     user:SendLua([[
-                        chat.AddText(Color(255, 0, 0), "ВНИМАНИЕ! Игрок ]]..ply:Nick()..[[ был кикнут с сервера!")
+                        chat.AddText(Color(255, 0, 0), "[ClothingSystem][Protected]: The player ']]..ply:Nick()..[[' was kicked from the server.")
                     ]])
                     user:SendLua([[
-                        chat.AddText(Color(255, 216, 23), "[StorageSystem] Anti-Cheat: зафиксирована серия попыток изменения NET параметров!")
+                        chat.AddText(Color(255, 216, 23), "[ClothingSystem][Protected]: a series of attempts to change the NET parameters!")
                     ]])
                 end
             end

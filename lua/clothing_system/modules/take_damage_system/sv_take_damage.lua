@@ -1,5 +1,5 @@
 -- Система гашения урона
-local function dmg(ply, hitgroup, dmginfo)
+local function dmg(ply, dmginfo)
     if (!IsValid(ply) || !ply:IsPlayer() || !ply:Alive()) then return end -- Проверка на то, что игрок доступен для установки параметров
     if (ply.ClothingSystemPlayerBase == nil) then return end -- Проверка на существования базы у игрока
     if (!ply.ClothingSystemPlayerIsSpawn) then return end -- Проверка на то, что игрок заспавнился
@@ -63,10 +63,12 @@ local function dmg(ply, hitgroup, dmginfo)
                         end
                     end
 
-                    dmginfo:ScaleDamage(NewScale) -- Применение урона на игрока
+                    -- dmginfo:ScaleDamage(NewScale) -- Применение урона на игрока
                 end
             end
         end
+
+        dmginfo:ScaleDamage(NewScale) -- Применение урона на игрока
     end
 end
-hook.Add("ScalePlayerDamage", "ClothingSystemModule.EntityTakeDamage", dmg)
+ClothingSystem.Tools.Hooks.AddHook("EntityTakeDamage", dmg)

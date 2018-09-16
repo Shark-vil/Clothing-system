@@ -37,8 +37,6 @@ local function set(ply, class, item)
     end
     if (item.BreathSoundInGasMask && item.GasMask && ply.ClothingSystemPlaysoundData['BreathSoundInGasMask'] == nil) then
         ply.ClothingSystemPlaysoundData['BreathSoundInGasMask'] = { item.BreathSoundInGasMask, class }
-    elseif (!item.BreathSoundInGasMask && item.GasMask && ply.ClothingSystemPlaysoundData['BreathSoundInGasMask'] == nil) then
-        ply.ClothingSystemPlaysoundData['BreathSoundInGasMask'] = { "clothsys_gasmask_2", class }
     end
 end
 
@@ -86,9 +84,8 @@ local function unset(ply, class, item)
 end
 
 -- Вызов хука, срабатывающего при выбрасывании предмета
-hook.Add("ClothingSystem.Drop", "SetBaseSound", function(class, owner)
-    local item = ClothingSystem:GetItem(class) -- Получение массива с параметрами одежды
-    local ply = owner -- Получение игрока по steamid
+ClothingSystem.Tools.Hooks.AddHook("ClothingSystem.Drop", function(ply, item_class, tbl, entity)
+    local item = ClothingSystem:GetItem(item_class) -- Получение массива с параметрами одежды
 
     -- Проверка на существование игрока
     if (!IsValid(ply) || !ply:IsPlayer()) then return end
@@ -96,7 +93,7 @@ hook.Add("ClothingSystem.Drop", "SetBaseSound", function(class, owner)
     -- Если массива не существует, устанавливаем пустой массив
     ply.ClothingSystemPlaysoundData = ply.ClothingSystemPlaysoundData || {}
 
-    unset(ply, class, item)
+    unset(ply, item_class, item)
 
     local items = ClothingSystem:PlayerGetItems(owner)
 
@@ -112,9 +109,8 @@ hook.Add("ClothingSystem.Drop", "SetBaseSound", function(class, owner)
 end)
 
 -- Вызов хука, срабатывающего при экипировании одежды
-hook.Add("ClothingSystem.Wear", "SetBaseSound", function(class, owner)
+ClothingSystem.Tools.Hooks.AddHook("ClothingSystem.Wear", function(ply, class)
     local item = ClothingSystem:GetItem(class) -- Получение массива с параметрами одежды
-    local ply = owner -- Получение игрока по steamid
 
      -- Проверка на существование игрока
     if (!IsValid(ply) || !ply:IsPlayer()) then return end
@@ -146,4 +142,4 @@ local function PlayerDeathReset(ply)
         ply.ClothingSystemPlaysoundData['RadiationSound'] = nil
     end
 end
-hook.Add( "PlayerDeath", "ClothingSystem.PlayerDeathReset.SoundEffectModule", PlayerDeathReset )
+ClothingSystem.Tools.Hooks.AddHook("PlayerDeath", PlayerDeathReset)

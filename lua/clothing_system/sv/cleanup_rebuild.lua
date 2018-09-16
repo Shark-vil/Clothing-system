@@ -12,4 +12,4 @@ local function loadDataWear()
         end
     end
 end
-hook.Add("PostCleanupMap", "ClothingSystem.loadDataWear", loadDataWear)
+ClothingSystem.Tools.Hooks.AddHook("PostCleanupMap", loadDataWear)

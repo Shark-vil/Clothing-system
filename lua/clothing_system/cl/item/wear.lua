@@ -1,20 +1,29 @@
 -- Экипировка одежды
-local function wear()
-    local class = net.ReadString()
-    local steamid = net.ReadString()
-    local ReplaceItem = net.ReadTable()
+local function wear(len, data)
+    local class = data.class
+    local steamid = data.steamid
+    local ReplaceItem = data.ReplaceItem
     local owner
     local ply = LocalPlayer()
     local parentType
     local Bone
 
     -- Получаем массив значений текущего item
-    local item = ClothingSystem:GetItem(class)
+    local item = list.Get("clothing_system")[class]
 
     if (game.SinglePlayer()) then
         owner = LocalPlayer()
     else
         owner = player.GetBySteamID(steamid)
+    end
+
+    if (item.Overlay && !ply.ClothingSystemData['ActiveOverlay'] && owner == ply) then
+        table.sort(item.Overlay, function( a, b ) return a[2] > b[2] end)
+        ply.ClothingSystemData['ActiveOverlay'] = item.Overlay
+    end
+
+    if (item.ChangeModelDamage) then
+        table.sort(item.ChangeModelDamage, function( a, b ) return a[2] < b[2] end)
     end
 
     -- Проверка на существование пользователя в мире
@@ -32,7 +41,7 @@ local function wear()
             end
 
             if ( !Bone ) then
-                owner:AddText("WARNING: No bone was found for attachment!")
+                owner:AddText(ClothingSystem.Language.noFreeBonesFound.."!")
             end
             parentType = "BoneAttach"
         elseif ( item.BonemergeSystem ) then
@@ -44,6 +53,7 @@ local function wear()
     local outfit
     if (!item.Module && !item.SetPlayerModel) then
         outfit = ClientsideModel( item.WireModel, RENDERGROUP_OPAQUE )
+        outfit.WireModel = item.WireModel
         outfit.Class = class
         outfit.SteamID = steamid
         outfit.parentType = parentType
@@ -57,6 +67,12 @@ local function wear()
         outfit.yPos = item.yPos || 0
         outfit.zPos = item.zPos || 0
         outfit.AttachBoneScaleModel = item.AttachBoneScaleModel || 1
+        outfit.Overlay = item.Overlay || false
+        if (item.Developing) then
+            outfit.Developing = true
+        else
+            outfit.Developing = false
+        end
         if ( item.Skin ) then
             if (table.Count(ReplaceItem) != 0 && ReplaceItem.Skin) then
                 outfit:SetSkin(ReplaceItem.Skin)
@@ -84,6 +100,7 @@ local function wear()
         else
             outfit:SetModel( item.WireModel )
         end
+        outfit.ChangeModelDamage = item.ChangeModelDamage
         outfit.ReplaceItem = ReplaceItem
         outfit:SetOwner(owner)
         outfit:SetParent(owner)
@@ -94,11 +111,41 @@ local function wear()
         outfit.SteamID = steamid
         outfit.Module = false
         outfit.SetPlayerModel = true
+        outfit.Overlay = item.Overlay || false
+        outfit.WireModel = item.WireModel
+        if (item.Developing) then
+            outfit.Developing = true
+        else
+            outfit.Developing = false
+        end
+        if ( item.Skin ) then
+            if (table.Count(ReplaceItem) != 0 && ReplaceItem.Skin) then
+                outfit:SetSkin(ReplaceItem.Skin)
+            else
+                outfit:SetSkin(item.Skin)
+            end
+        end
+        if ( item.Bodygroup ) then
+            if (table.Count(ReplaceItem) != 0 && ReplaceItem.Bodygroup) then
+                outfit:SetBodygroup(ReplaceItem.Bodygroup[1], ReplaceItem.Bodygroup[2])
+            else
+                outfit:SetBodygroup(item.Bodygroup[1], item.Bodygroup[2])
+            end
+        end
+        if ( item.Bodygroups ) then
+            if (table.Count(ReplaceItem) != 0 && ReplaceItem.Bodygroup) then
+                outfit:SetBodygroups(ReplaceItem.Bodygroups)
+            else
+                outfit:SetBodygroups(item.Bodygroups)
+            end
+        end
         outfit:SetOwner(owner)
         outfit:SetParent(owner)
         outfit:SetNoDraw(true)
-    elseif (item.Module)then
+    elseif (item.Module) then
         outfit = ClientsideModel( item.WireModel, RENDERGROUP_OPAQUE )
+        outfit.WireModel = item.WireModel
+        outfit.Overlay = item.Overlay || false
         outfit.Class = class
         outfit.SteamID = steamid
         outfit.Module = true
@@ -122,4 +169,4 @@ local function wear()
 
     hook.Run( "ClothingSystem.Wear", class, owner)
 end
-net.Receive("ClothingSystem.WearEveryone", wear)
+ClothingSystem.Tools.Network.AddNetwork("WearEveryone", wear)

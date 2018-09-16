@@ -7,6 +7,9 @@ local ignore_attacker = {
     "npc_zombie_torso",
     "npc_zombine",
     "npc_poisonzombie",
+    "npc_fastzombie",
+    "npc_fastzombie_torso",
+    "npc_manhack",
 }
 
 local controversial_weapons = {
@@ -43,16 +46,17 @@ local controversial_weapons = {
     "m9k_machete",
 }
 
-hook.Add("PlayerShouldTakeDamage", "ClothingSystemModule.EntityTakeDamage", function(ply, enemy)
+ClothingSystem.Tools.Hooks.AddHook("PlayerShouldTakeDamage", function(ply, enemy)
     if (IsValid(ply) && ply:IsPlayer() && ply:Alive() && enemy:IsPlayer() || enemy:IsNPC()) then
-        if (table.HasValue(ignore_attacker, enemy:GetClass())) then return false end
         if (ply.ClothingSystemPlayerBase != nil) then
             if (ply.ClothingSystemPlayerIsSpawn) then
-                local items = ClothingSystem:PlayerGetItems(ply)
-                if (!ClothingSystem:TableIsEmpty(items)) then
-                    for _, class in pairs(items) do
-                        local item = list.Get("clothing_system")[class]
-                        if (IsValid(enemy) && item.PowerArmor) then
+                if (#ply.ClothingSystemWearList != 0) then
+                    for _, class in pairs(ply.ClothingSystemWearList) do
+                        local item = list.Get('clothing_system')[class]
+                        if (IsValid(enemy) && item != nil && item.PowerArmor) then
+                            if (enemy:IsNPC()) then
+                                if (table.HasValue(ignore_attacker, enemy:GetClass())) then return false end
+                            end
                             if (IsValid(enemy:GetActiveWeapon())) then
                                 local weapon = enemy:GetActiveWeapon()
 
@@ -68,22 +72,39 @@ hook.Add("PlayerShouldTakeDamage", "ClothingSystemModule.EntityTakeDamage", func
     end
 end)
 
-hook.Add("EntityTakeDamage", "ClothingSystemModule.EntityTakeDamage", function(target, dmginfo)
+ClothingSystem.Tools.Hooks.AddHook("EntityTakeDamage", function(target, dmginfo)
     local enemy = dmginfo:GetAttacker()
-    
-    if (IsValid(enemy) && IsValid(target) && enemy:IsPlayer()) then
+
+    if (IsValid(target) && target:IsPlayer() && target:Alive()) then
+        if (target.ClothingSystemPlayerBase != nil) then
+            if (target.ClothingSystemPlayerIsSpawn) then
+                if (#target.ClothingSystemWearList != 0) then
+                    for _, class in pairs(target.ClothingSystemWearList) do
+                        local item = list.Get('clothing_system')[class]
+                        if (item != nil && item.PowerArmor) then
+                            if (dmginfo:IsDamageType(DMG_RADIATION) || dmginfo:IsDamageType(DMG_ACID) || dmginfo:IsDamageType(DMG_POISON)) then
+                                dmginfo:ScaleDamage(0)
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    elseif (IsValid(enemy) && IsValid(target) && enemy:IsPlayer()) then
         if (enemy:Alive()) then
             if (enemy.ClothingSystemPlayerBase != nil) then
                 if (enemy.ClothingSystemPlayerIsSpawn) then
-                    local items = ClothingSystem:PlayerGetItems(enemy)
-                    if (!ClothingSystem:TableIsEmpty(items)) then
-                        for _, class in pairs(items) do
-                            local item = ClothingSystem:GetItem(class)
-                            if (item.PowerArmor) then
+                    if (#enemy.ClothingSystemWearList != 0) then
+                        for _, class in pairs(enemy.ClothingSystemWearList) do
+                            local item = list.Get('clothing_system')[class]
+                            if (item != nil && item.PowerArmor) then
                                 if (IsValid(enemy:GetActiveWeapon())) then
                                     local weapon = enemy:GetActiveWeapon()
     
                                     if (table.HasValue(controversial_weapons, weapon:GetClass())) then
+                                        dmginfo:ScaleDamage( dmginfo:GetDamage() + (dmginfo:GetDamage()/2) )
+                                        dmginfo:SetDamageForce( Vector(dmginfo:GetDamageForce().x*2, dmginfo:GetDamageForce().y*2, dmginfo:GetDamageForce().z*2) )
+                                    elseif (dmginfo:GetDamageType() == DMG_CLUB) then
                                         dmginfo:ScaleDamage( dmginfo:GetDamage() + (dmginfo:GetDamage()/2) )
                                         dmginfo:SetDamageForce( Vector(dmginfo:GetDamageForce().x*2, dmginfo:GetDamageForce().y*2, dmginfo:GetDamageForce().z*2) )
                                     end

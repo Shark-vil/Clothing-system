@@ -1,6 +1,4 @@
-print("[ClothingSystem] Init module - Storage System: (SV) sv_hooks.lua")
-
-hook.Add( "ClothingSystem.Drop", "ClothingStorageSystem.DropSaveData", function(ply, item, item_class)
+local function drop(ply, item_class, tbl, item)
     if (!IsValid(ply) || !ply:Alive()) then return end
 
     local steamid
@@ -21,9 +19,10 @@ hook.Add( "ClothingSystem.Drop", "ClothingStorageSystem.DropSaveData", function(
             file.Write("clothing_system/pockets/"..steamid..".dat", util.TableToJSON(_file, true))
         end
     end
-end)
+end
+ClothingSystem.Tools.Hooks.AddHook("ClothingSystem.Drop", drop)
 
-hook.Add("ClothingSystem.Wear", "ClothingStorageSystem.WearData", function(class, ply, tbl)
+local function wear(ply, class, tbl, entity)
     if (tbl['StorageSystemSave'] != nil) then
         if (tbl['StorageSystemSave'] != nil) then
             local steamid
@@ -46,9 +45,10 @@ hook.Add("ClothingSystem.Wear", "ClothingStorageSystem.WearData", function(class
             end
         end
     end
-end)
+end
+ClothingSystem.Tools.Hooks.AddHook("ClothingSystem.Wear", wear)
 
-hook.Add("PlayerDeath", "ClothingStorageSystem.PlayerDeathSaveData", function(ply, inflictor, attacker)
+local function PlayerDeath(ply, inflictor, attacker)
     if (!IsValid(ply) || !ply:Alive()) then return end
 
     local steamid
@@ -59,4 +59,5 @@ hook.Add("PlayerDeath", "ClothingStorageSystem.PlayerDeathSaveData", function(pl
     end
 
     file.Write("clothing_system/pockets/"..steamid..".dat", "[]")
-end)
+end
+ClothingSystem.Tools.Hooks.AddHook("PlayerDeath", PlayerDeath)

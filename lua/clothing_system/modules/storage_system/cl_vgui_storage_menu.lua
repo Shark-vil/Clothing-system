@@ -1,4 +1,3 @@
-print("[ClothingSystem] Init module - Storage System: (CL) cl_vgui_storage_menu.lua")
 local DATA
 
 function ItemOptions(ply, data, clothClass, itemClass, index, pocket)
@@ -11,7 +10,7 @@ function ItemOptions(ply, data, clothClass, itemClass, index, pocket)
     local size = 0
     
     local Body = vgui.Create( "DFrame" )
-    Body:SetSize( ScrW()/2, ScrH()/2 )
+    Body:SetSize( ScrW()/2.5, ScrH()/2.2 )
     Body:SetTitle( "" )
     Body:SetDraggable( true )
     Body:MakePopup()
@@ -22,8 +21,8 @@ function ItemOptions(ply, data, clothClass, itemClass, index, pocket)
     end
     Body.Paint = function()
         draw.RoundedBox( 8, 0, 0, Body:GetWide(), Body:GetTall(), Color( 0, 0, 0, 150 ) )
-        draw.DrawText("Actions", "Trebuchet18", 10, 5, Color(255,255,255,255), TEXT_ALIGN_LEFT)
-        draw.RoundedBox( 8, ScrW()/4+30, Py, 250, 200, Color( 255, 255, 255, 100 ) )
+        draw.DrawText(ClothingSystem.Language.vguiMenu_2_Title, "Trebuchet18", 10, 5, Color(255,255,255,255), TEXT_ALIGN_LEFT)
+        draw.RoundedBox( 8, ScrW()/6+30, Py, 250, 200, Color( 255, 255, 255, 100 ) )
 
         if (!IsValid(ply) || !ply:Alive()) then
             Body:Remove()
@@ -31,7 +30,7 @@ function ItemOptions(ply, data, clothClass, itemClass, index, pocket)
     end
 
     local ClothingModel = vgui.Create( "DModelPanel", Body )
-    ClothingModel:SetPos( ScrW()/4+30, Py )
+    ClothingModel:SetPos( ScrW()/6+30, Py )
     ClothingModel:SetSize( 250, 200 )
     ClothingModel:SetFOV(fov)
     ClothingModel:SetModel( data[clothClass][pocket]['items'][index][itemClass]['model'] )
@@ -53,8 +52,8 @@ function ItemOptions(ply, data, clothClass, itemClass, index, pocket)
     ClothingModel:SetLookAt( ( mn + mx ) * 0.5 )
     
     local ClothingModelFov = vgui.Create( "DNumSlider", Body )
-    ClothingModelFov:SetPos( ScrW()/4-100, 200+25 )		
-    ClothingModelFov:SetSize( ScrW()/4+30, 15 )		
+    ClothingModelFov:SetPos( ScrW()/6-80, 200+25 )		
+    ClothingModelFov:SetSize( ScrW()/6+130, 15 )		
     ClothingModelFov:SetMin( 0 )			
     ClothingModelFov:SetMax( 100 )		
     ClothingModelFov:SetDecimals( 0 )		
@@ -77,37 +76,35 @@ function ItemOptions(ply, data, clothClass, itemClass, index, pocket)
     end
 
     local Button = vgui.Create( "DButton", Body )
-    Button:SetText( "Drop" )
+    Button:SetText( ClothingSystem.Language.vguiMenu_2_Drop )
     Button:SetPos( Px, Py+PxAdd )
-    Button:SetSize( ScrW()/4, 50 )
+    Button:SetSize( ScrW()/6, 25 )
     Button.DoClick = function ()
         local finalData = {}
         finalData['clothClass'] = clothClass
         finalData['pocket'] = pocket
         finalData['index'] = index
         finalData['usetype'] = "drop"
+        finalData['type'] = data[clothClass][pocket]['items'][index][itemClass]['type']
 
-        net.Start("ClothingStorageSystem.EntitySpawner")
-        net.WriteTable(finalData)
-        net.SendToServer()
+        ClothingSystem.Tools.Network.Send("SendToServer", "ClothingStorageSystem.EntitySpawner", finalData)
         Body:Remove()
     end
 
-    PxAdd=PxAdd+50
+    PxAdd=PxAdd+25
     local Button = vgui.Create( "DButton", Body )
-    Button:SetText( "Use" )
+    Button:SetText( ClothingSystem.Language.vguiMenu_Storage_ItemUse )
     Button:SetPos( Px, Py+PxAdd )
-    Button:SetSize( ScrW()/4, 50 )
+    Button:SetSize( ScrW()/6, 25 )
     Button.DoClick = function ()
         local finalData = {}
         finalData['clothClass'] = clothClass
         finalData['pocket'] = pocket
         finalData['index'] = index
         finalData['usetype'] = "use"
+        finalData['type'] = data[clothClass][pocket]['items'][index][itemClass]['type']
 
-        net.Start("ClothingStorageSystem.EntitySpawner")
-        net.WriteTable(finalData)
-        net.SendToServer()
+        ClothingSystem.Tools.Network.Send("SendToServer", "ClothingStorageSystem.EntitySpawner", finalData)
         Body:Remove()
     end
 end
@@ -127,7 +124,7 @@ function ViewItems(ply, data, class, pocket)
     end
     Body.Paint = function()
         draw.RoundedBox( 8, 0, 0, Body:GetWide(), Body:GetTall(), Color( 0, 0, 0, 150 ) )
-        draw.DrawText("Your clothes", "Trebuchet18", 10, 5, Color(255,255,255,255), TEXT_ALIGN_LEFT)
+        draw.DrawText(ClothingSystem.Language.vguiMenu_1_Title, "Trebuchet18", 10, 5, Color(255,255,255,255), TEXT_ALIGN_LEFT)
         if (!IsValid(ply) || !ply:Alive()) then
             Body:Remove()
         end
@@ -137,13 +134,12 @@ function ViewItems(ply, data, class, pocket)
     ClothList:Dock( FILL )
     ClothList:SetMultiSelect( false )
     ClothList:AddColumn( "№" )
-    ClothList:AddColumn( "Object" )
-    ClothList:AddColumn( "Weight" )
-    ClothList:AddColumn( "Class" )
-    ClothList:AddColumn( "Type" )
+    ClothList:AddColumn( ClothingSystem.Language.vguiMenu_Storage_List_Object )
+    ClothList:AddColumn( ClothingSystem.Language.vguiMenu_Storage_List_Weight )
+    ClothList:AddColumn( ClothingSystem.Language.vguiMenu_Storage_List_Class )
+    ClothList:AddColumn( ClothingSystem.Language.vguiMenu_Storage_List_Type )
 
     local maxIndex = table.Count(data[class][pocket]['items'])
-
     if (maxIndex != 0) then
         maxIndex = maxIndex -1 
         for i = 0, maxIndex do
@@ -180,7 +176,7 @@ function ViewPockets(ply, data, class)
     end
     Body.Paint = function()
         draw.RoundedBox( 8, 0, 0, Body:GetWide(), Body:GetTall(), Color( 0, 0, 0, 150 ) )
-        draw.DrawText("Your clothes", "Trebuchet18", 10, 5, Color(255,255,255,255), TEXT_ALIGN_LEFT)
+        draw.DrawText(ClothingSystem.Language.vguiMenu_1_Title, "Trebuchet18", 10, 5, Color(255,255,255,255), TEXT_ALIGN_LEFT)
         if (!IsValid(ply) || !ply:Alive()) then
             Body:Remove()
         end
@@ -189,7 +185,7 @@ function ViewPockets(ply, data, class)
     local ClothList = vgui.Create( "DListView", Body )
     ClothList:Dock( FILL )
     ClothList:SetMultiSelect( false )
-    ClothList:AddColumn( "Storage" )
+    ClothList:AddColumn( ClothingSystem.Language.vguiMenu_Storage_List )
 
     for k, v in pairs(ClothingSystem:GetItem(class).Pockets) do
         ClothList:AddLine(k)
@@ -216,7 +212,7 @@ function MainMenu(ply, data)
     Body:Center()
     Body.Paint = function()
         draw.RoundedBox( 8, 0, 0, Body:GetWide(), Body:GetTall(), Color( 0, 0, 0, 150 ) )
-        draw.DrawText("Your clothes", "Trebuchet18", 10, 5, Color(255,255,255,255), TEXT_ALIGN_LEFT)
+        draw.DrawText(ClothingSystem.Language.vguiMenu_1_Title, "Trebuchet18", 10, 5, Color(255,255,255,255), TEXT_ALIGN_LEFT)
         if (!IsValid(ply) || !ply:Alive()) then
             Body:Remove()
         end
@@ -225,8 +221,8 @@ function MainMenu(ply, data)
     local ClothList = vgui.Create( "DListView", Body )
     ClothList:Dock( FILL )
     ClothList:SetMultiSelect( false )
-    ClothList:AddColumn( "Clothing" )
-    ClothList:AddColumn( "Class" )
+    ClothList:AddColumn( ClothingSystem.Language.vguiMenu_Storage_Clothing )
+    ClothList:AddColumn( ClothingSystem.Language.vguiMenu_1_Class )
 
     if (ply:ClothingSystemGetAllItem(PlayerSteamID)) then
         local pt = ply:ClothingSystemGetAllItem(PlayerSteamID)
@@ -248,7 +244,8 @@ function MainMenu(ply, data)
     end
 end
 
-net.Receive("ClothingStorageSystem.OpenStorageMenu", function ()
-    DATA = net.ReadTable()
+ClothingSystem.Tools.Network.AddNetwork("ClothingStorageSystem.OpenStorageMenu", function (len, data, ply)
+    DATA = data
+
     MainMenu(LocalPlayer(), DATA)
 end)

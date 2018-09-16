@@ -1,4 +1,3 @@
-print("[ClothingSystem] Init module - Storage System: (CL) cl_vgui_additem.lua")
 local DATA
 
 local function ViewPockets(ply, data, class, Entity)
@@ -12,17 +11,17 @@ local function ViewPockets(ply, data, class, Entity)
     Body:Center()
     Body.Paint = function()
         draw.RoundedBox( 8, 0, 0, Body:GetWide(), Body:GetTall(), Color( 0, 0, 0, 150 ) )
-        draw.DrawText("Your clothes", "Trebuchet18", 10, 5, Color(255,255,255,255), TEXT_ALIGN_LEFT)
+        draw.DrawText(ClothingSystem.Language.vguiMenu_1_Title, "Trebuchet18", 10, 5, Color(255,255,255,255), TEXT_ALIGN_LEFT)
         if (!IsValid(Entity) || !IsValid(ply) || !ply:Alive()) then
             Body:Close()
-            chat.AddText("This object was destroyed or picked up by another player!")
+            chat.AddText(ClothingSystem.Language.vguiMenu_Storage_EntityDestroyed.."!")
         end
     end
 
     local ClothList = vgui.Create( "DListView", Body )
     ClothList:Dock( FILL )
     ClothList:SetMultiSelect( false )
-    ClothList:AddColumn( "Pocket" )
+    ClothList:AddColumn(ClothingSystem.Language.vguiMenu_Storage_PocketsName)
     for name, weight in pairs(ClothingSystem:GetItem(class).Pockets) do
         ClothList:AddLine( name )
     end
@@ -34,7 +33,7 @@ local function ViewPockets(ply, data, class, Entity)
         local name = line:GetColumnText(1)
         local item = ClothingStorageSystem:GetItem(Entity:GetClass())
         entitySaveClientside = {}
-        if (item.clientSave != nil) then
+        if (item && item.clientSave != nil) then
             entitySaveClientside = item.clientSave(ply, Entity)
         end
         data['entitySaveClientside'] = entitySaveClientside
@@ -48,9 +47,7 @@ local function ViewPockets(ply, data, class, Entity)
             data['entityName'] = Entity.PrintName
         end
 
-        net.Start("ClothingStorageSystem.SendToServerAddFile")
-            net.WriteTable(data)
-        net.SendToServer()
+        ClothingSystem.Tools.Network.Send("SendToServer", "ClothingStorageSystem.SendToServerAddFile", data)
         Body:Close()
     end
 end
@@ -67,18 +64,18 @@ local function MainMenu(ply, data)
     Body:Center()
     Body.Paint = function()
         draw.RoundedBox( 8, 0, 0, Body:GetWide(), Body:GetTall(), Color( 0, 0, 0, 150 ) )
-        draw.DrawText("Your clothes", "Trebuchet18", 10, 5, Color(255,255,255,255), TEXT_ALIGN_LEFT)
+        draw.DrawText(ClothingSystem.Language.vguiMenu_1_Title, "Trebuchet18", 10, 5, Color(255,255,255,255), TEXT_ALIGN_LEFT)
         if (!IsValid(Entity) || !IsValid(ply) || !ply:Alive()) then
             Body:Close()
-            chat.AddText("This object was destroyed or picked up by another player!")
+            chat.AddText(ClothingSystem.Language.vguiMenu_Storage_EntityDestroyed.."!")
         end
     end
 
     local ClothList = vgui.Create( "DListView", Body )
     ClothList:Dock( FILL )
     ClothList:SetMultiSelect( false )
-    ClothList:AddColumn( "Name" )
-    ClothList:AddColumn( "Class" )
+    ClothList:AddColumn( ClothingSystem.Language.vguiMenu_1_Name )
+    ClothList:AddColumn( ClothingSystem.Language.vguiMenu_1_Class )
 
     if (ply:ClothingSystemGetAllItem(PlayerSteamID)) then
         local pt = ply:ClothingSystemGetAllItem(PlayerSteamID)
@@ -100,7 +97,8 @@ local function MainMenu(ply, data)
     end
 end
 
-net.Receive("ClothingStorageSystem.OpenAddItemMenu", function()
-    DATA = net.ReadTable()
+ClothingSystem.Tools.Network.AddNetwork("ClothingStorageSystem.OpenAddItemMenu", function (len, data, ply)
+    DATA = data
+
     MainMenu(LocalPlayer(), DATA)
 end)

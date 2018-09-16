@@ -1,9 +1,5 @@
 -- Установка базовых элементов при загрузке и спавне
-local function construct()
-    local bones = net.ReadTable()
-    local type = net.ReadString()
-    local ply = LocalPlayer()
-
-    ply:ClothingSystemConstruct(bones, type)
+local function construct(len, data)
+    LocalPlayer():ClothingSystemConstruct(data.bones, data.type)
 end
-net.Receive("ClothingSystem.ConstructData", construct)
+ClothingSystem.Tools.Network.AddNetwork("ConstructData", construct)

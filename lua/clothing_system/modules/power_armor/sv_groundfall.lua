@@ -21,4 +21,4 @@ local function dmg(ply, dmginfo)
         end
     end
 end
-hook.Add("EntityTakeDamage", "ClothingSystem.PowerArmorWaterDown.EntityTakeDamage", dmg)
+ClothingSystem.Tools.Hooks.AddHook("EntityTakeDamage", dmg)
