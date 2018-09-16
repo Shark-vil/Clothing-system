@@ -7,13 +7,13 @@ function ENT:Draw()
     
     if ( self:GetPos():Distance(LocalPlayer():GetPos()) <= 150 && self.Class != nil ) then
         local Name = list[self.Class].Name
-        local _max = self:OBBMaxs()
-        local Pos = self:GetPos() + Vector(0, 0, _max.z + 10)
-        local Ang = LocalPlayer():GetAngles()
+        local obb = self:OBBMaxs()
+        local Pos = self:GetPos() + Vector(0, 0, obb.z + 10)
+        local PlyAng = LocalPlayer():GetAngles()
 
-        Ang:RotateAroundAxis(Ang:Up(), -90)
-        Ang:RotateAroundAxis(Ang:Right(), 0)
-        Ang:RotateAroundAxis(Ang:Forward(), 90)
+        PlyAng:RotateAroundAxis(PlyAng:Up(), -90)
+        PlyAng:RotateAroundAxis(PlyAng:Right(), 0)
+        PlyAng:RotateAroundAxis(PlyAng:Forward(), 90)
 
         local PressText = "Press \"E\" to wear"
         local lenStr = string.len( Name )
@@ -26,7 +26,7 @@ function ENT:Draw()
             WidthRelize = lenStr
         end
 
-        cam.Start3D2D(Pos, Ang, 0.15)
+        cam.Start3D2D(Pos, PlyAng, 0.15)
             draw.RoundedBox( 0, -WidthRelize*5.2, 0, WidthRelize*10.3, 60, Color( 34, 34, 34, 220))
             draw.SimpleTextOutlined( Name, "Trebuchet24", 0, 5, Color(255,255,255,255 ), 1, 0, 2, Color( 0, 0, 0 ) )
             draw.SimpleTextOutlined( PressText, "Trebuchet24", 0, 30, Color(255,255,255,255 ), 1, 0, 2, Color( 0, 0, 0 ) )
