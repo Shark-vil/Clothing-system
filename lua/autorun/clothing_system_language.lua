@@ -73,4 +73,10 @@ rus_pack.vguiMenu_1_Title = "Ваша одежда"
 rus_pack.vguiMenu_1_Class = "Класс"
 rus_pack.vguiMenu_1_Name = "Название"
 
-ClothingSystem.Language = eng_pack
+CreateConVar( "clothing_system_language", "en", FCVAR_ARCHIVE, "Change the language of the addon.")
+
+if ( GetConVar("clothing_system_language"):GetString() == "ru" ) then 
+    ClothingSystem.Language = rus_pack 
+else 
+    ClothingSystem.Language = eng_pack 
+end

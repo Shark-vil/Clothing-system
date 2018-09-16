@@ -1,7 +1,4 @@
 -- SH
-CreateConVar( "clothing_system_language", "en", FCVAR_ARCHIVE, "Change the language of the addon.")
-
-if ( GetConVar("clothing_system_language"):GetString() == "ru" ) then ClothingSystem.Language = rus_pack else ClothingSystem.Language = eng_pack end
 
 -- SV
 if SERVER then
