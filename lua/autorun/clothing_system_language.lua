@@ -74,4 +74,8 @@ rus_pack.vguiMenu_1_Class = "Класс"
 rus_pack.vguiMenu_1_Name = "Название"
 
 -- Setup language pack
-ClothingSystem.Language = eng_pack
+if ( GetConVar("clothing_system_language"):GetString() == "ru" ) then
+    ClothingSystem.Language = rus_pack
+else
+    ClothingSystem.Language = eng_pack
+end
