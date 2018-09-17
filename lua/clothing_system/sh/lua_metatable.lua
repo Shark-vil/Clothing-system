@@ -346,6 +346,9 @@ local META = {
             if (list.Bodygroups != nil && istable(list.Bodygroups)) then
                 item:SetBodygroups(list.Bodygroups)
             end
+            if (list.CustomCollision) then
+                item.CustomCollision = true
+            end
             item:SetPos(SpawnPos)
             item:SetAngles(SpawnAng)
             item:Spawn()
