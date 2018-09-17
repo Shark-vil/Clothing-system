@@ -2,6 +2,10 @@ list.Set( "player_base_clothing_system", "pony", {
     NiceModel = {
         'models/ppm/player_default_base_new.mdl',
         'models/ppm/player_default_base_new_nj.mdl',
+        'models/ppm/player_default_base_nj.mdl',
+        'models/ppm/player_default_base.mdl',
+        'models/cppm/player_default_base.mdl',
+        'models/cppm/player_default_base_nj.mdl',
     },
     BoneType = {
         Head = false, -- Голова
