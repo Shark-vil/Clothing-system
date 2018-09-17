@@ -203,3 +203,9 @@ end
 
 META.__index = META
 setmetatable(ClothingStorageSystem, META)
+
+
+local function Initialize()
+	hook.Run("StorageSystem.Add")
+end
+hook.Add( "Initialize", "ClothingSystem.Storage.Initialize.Items", Initialize )
