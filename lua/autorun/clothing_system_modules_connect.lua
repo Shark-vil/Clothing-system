@@ -5,6 +5,7 @@ include("clothing_system_load_author_banner.lua")
 include("clothing_system_tools.lua")
 include("clothing_system_cfg.lua")
 include("clothing_system_language.lua")
+include("clothing_system_storage_meta.lua")
 
 local prefix = 'clothing_system'
 local shared = {

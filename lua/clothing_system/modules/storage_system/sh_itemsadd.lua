@@ -1,7 +1,3 @@
-if SERVER then
-    AddCSLuaFile()
-end
-
 ClothingStorageSystem:Add({
     ['class'] = "sent_ball",
     ['weight'] = 5,
