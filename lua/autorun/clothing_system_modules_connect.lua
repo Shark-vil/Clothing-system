@@ -1,4 +1,5 @@
 ClothingSystem = ClothingSystem || {}
+
 file.CreateDir("clothing_system")
 file.CreateDir("clothing_system/log")
 include("clothing_system_load_author_banner.lua")
@@ -6,9 +7,11 @@ include("clothing_system_tools.lua")
 include("clothing_system_cfg.lua")
 include("clothing_system_language.lua")
 include("clothing_system_storage_meta.lua")
+include("clothing_system_updates.lua")
 
 local prefix = 'clothing_system'
 local shared = {
+    'sh/enhanced_pm_selector.lua',
     'sh/pac3.lua',
     'sh/cvars.lua',
     'sh/lua_metatable.lua',
@@ -23,6 +26,7 @@ local shared = {
     'sh/sound_effects/include.lua',
 }
 local client = {
+    'cl/update_list.lua',
     'cl/construct_data.lua',
     'cl/spawn_menu.lua',
     'cl/item/draw_clothing.lua',

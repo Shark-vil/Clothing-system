@@ -9,16 +9,19 @@ local function drop(len, data, ply)
     --     ReplcaeBone = ClothingSystem:GetItem(class).TypePut
     -- end
 
+    local item = list.Get("clothing_system")[data.class]
+    if (item == nil) then return end
+
     if (ReplaceItem && ReplaceItem.TypePut) then
         ReplcaeBone = ReplaceItem.TypePut
-    elseif (ClothingSystem:GetItem(data.class).TypePut) then
-        ReplcaeBone = ClothingSystem:GetItem(data.class).TypePut
-    elseif (ClothingSystem:GetItem(data.class).Accessory) then
+    elseif (item.TypePut) then
+        ReplcaeBone = item.TypePut
+    elseif (item.Accessory) then
         ReplcaeBone = {}
     end
 
     ClothingSystem:PlayerRemoveItem(ply, data.class)
-    if (!ClothingSystem:GetItem(data.class).SetPlayerModel) then
+    if (!item.SetPlayerModel) then
         ply:ClothingSystemLetBone(data.class, ReplcaeBone)
     end
 
@@ -35,23 +38,26 @@ ClothingSystem.Tools.Hooks.AddHook("ClothingSystem.PlayerSay", function( ply, te
     if ( command == string.sub(text, 1, string.len(command)) ) then
         local class = string.sub( text, string.len(command)+1 )
         class = string.gsub(class, "%s+", "")
-        local list = ClothingSystem:PlayerGetItems(ply)
+        local items = ClothingSystem:PlayerGetItems(ply)
 
         local ReplaceItem = ClothingSystem:CheckReplace(class, ply)
         local OpenBones = {}
 
+        local item = list.Get("clothing_system")[class]
+        if (item == nil) then return end
+
         if (ReplaceItem && ReplaceItem.TypePut) then
             OpenBones = ReplaceItem.TypePut
-        elseif (ClothingSystem:GetItem(class).TypePut) then
-            OpenBones = ClothingSystem:GetItem(class).TypePut
-        elseif (ClothingSystem:GetItem(class).Accessory) then
+        elseif (item.TypePut) then
+            OpenBones = item.TypePut
+        elseif (item.Accessory) then
             OpenBones = {}
         end
 
-        if ( table.Count(list) != 0 ) then
-            if ( table.HasValue(list, class) ) then
+        if ( table.Count(items) != 0 ) then
+            if ( table.HasValue(items, class) ) then
                 ClothingSystem:PlayerRemoveItem(ply, class)
-                if (!ClothingSystem:GetItem(class).SetPlayerModel) then
+                if (!item.SetPlayerModel) then
                     ply:ClothingSystemLetBone(class, OpenBones)
                 end
                 hook.Run("ClothingSystemSpawnItem", ply, class)

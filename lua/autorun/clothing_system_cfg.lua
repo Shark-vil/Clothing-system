@@ -7,6 +7,7 @@ if SERVER then
     ClothingSystem.Config.NetworkPtotectSystem = true
     ClothingSystem.Config.NetworkPtotectSystemBannedSpam = false
     ClothingSystem.Config.LogOn = false
+    ClothingSystem.Config.EnhancedPMSelector_FixChangePlayermodel = true
 end
 
 -- Client --

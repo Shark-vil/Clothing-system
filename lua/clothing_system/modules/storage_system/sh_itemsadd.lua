@@ -1,18 +1,4 @@
-local function stringRandom( length )
-	local length = tonumber( length )
-	if length < 1 then return end
-	local result = ""
-	for i = 1, length do
-		result = result .. string.char( math.random( 65, 90 ) )
-	end
-	return result
-end
-
-local rnd = math.random(0, 10)
-local tags = "FG"
-local names = stringRandom(rnd)
-
-hook.Add("StorageSystem.Add", "Storage@"..tags.."@"..names, function()
+hook.Add("StorageSystem.Add", "Storage.FG.AddCustomItems", function()
     ClothingStorageSystem:Add({
         ['class'] = "item_healthkit",
         ['weight'] = 5,
