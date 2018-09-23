@@ -27,8 +27,8 @@ list.Set( "clothing_system", "drumpfhat", {
     end,
 
     BoneAttach = true,
-    AttachBoneType = "ValveBiped.Bip01_Head1",
-    AttachBoneScaleModel = 1.05,
+    Bone = "ValveBiped.Bip01_Head1",
+    ScaleModel = 1.05,
     xPos = 0,
     yPos = -4,
     zPos = -1.2,

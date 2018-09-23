@@ -511,7 +511,7 @@ local META = {
             local fuckYou = true
             
             if ( istable(item.OnlySteamID) ) then
-                 for k, v in pairs(item.OnlySteamID) do
+                 for _, v in pairs(item.OnlySteamID) do
                     if (v == ply:SteamID() || v == ply:SteamID64()) then
                         fuckYou = false
                         break
@@ -532,24 +532,18 @@ local META = {
                 ply:AddText(ClothingSystem.Language.adminOnly.."!")
                 return false
             end
-        elseif ( item.GroupDressList ) then
+        elseif ( item.GroupDress ) then
             local fuckYou = true
 
-            if ( !istable(item.GroupDressList) && !isstring(item.GroupDressList) ) then
-                error("ClothingSystem: "..class.." - Bad argument GroupDressList!")
-            elseif (isstring(item.GroupDressList)) then
-                if ( ply:GetUserGroup() == item.GroupDressList ) then
+            if (isstring(item.GroupDress)) then
+                if ( ply:GetUserGroup() == item.GroupDress ) then
                     fuckYou = false
                 end
-            else
-                if( table.Count(item.GroupDressList) == 0 ) then
-                    fuckYou = false
-                else
-                    for _, group in pairs(item.GroupDressList) do
-                        if ( ply:GetUserGroup() == group ) then
-                            fuckYou = false
-                            break
-                        end
+            elseif (istable(item.GroupDress)) then
+                for _, group in pairs(item.GroupDress) do
+                    if ( ply:GetUserGroup() == group ) then
+                        fuckYou = false
+                        break
                     end
                 end
             end
@@ -569,6 +563,11 @@ local META = {
         end
 
         if (item.Module) then
+            if ( !ply:ClothingSystemCheckBone(class, ReplcaeBone, insertData) ) then
+                ply:AddText(ClothingSystem.Language.noFreeSlot.."!")
+                return false
+            end
+            
             if ( item.Equip && entity && insertData) then
                 item.Equip(ply, class, entity)
             elseif ( item.Equip && insertData) then
@@ -641,7 +640,7 @@ local META = {
         -- Проверка на наличие предопределённого типа привязки
         if (!item.Module) then
             if (!item.SetPlayerModel) then
-                if ( !item.BoneAttach && !item.BonemergeSystem ) then
+                if ( !item.BoneAttach && !item.Bonemerge ) then
                     ply:AddText(ClothingSystem.Language.badArray.."!")
                     return false
                 else

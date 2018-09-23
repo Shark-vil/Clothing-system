@@ -11,8 +11,8 @@ list.Set( "clothing_system", "usgear_backpack", {
     EquipSound = "clothing_system/other/other_equip_2.wav",
 
     BoneAttach = true,
-    AttachBoneType = "ValveBiped.Bip01_Spine1",
-    AttachBoneScaleModel = 1,
+    Bone = "ValveBiped.Bip01_Spine1",
+    ScaleModel = 1,
     xPos = 5,
     yPos = -25,
     zPos = 0,
@@ -42,8 +42,8 @@ list.Set( "clothing_system", "fg_fallout_backpack", {
     EquipSound = "clothing_system/other/other_equip_2.wav",
 
     BoneAttach = true,
-    AttachBoneType = "ValveBiped.Bip01_Spine1",
-    AttachBoneScaleModel = 1,
+    Bone = "ValveBiped.Bip01_Spine1",
+    ScaleModel = 1,
     xPos = 3,
     yPos = 10,
     zPos = -5,
@@ -73,8 +73,8 @@ list.Set( "clothing_system", "fg_fallout_backpack_pony_mini", {
     EquipSound = "clothing_system/other/other_equip_2.wav",
 
     BoneAttach = true,
-    AttachBoneType = "lrigspine1",
-    AttachBoneScaleModel = 1,
+    Bone = "lrigspine1",
+    ScaleModel = 1,
     xPos = -4,
     yPos = 0,
     zPos = -3,

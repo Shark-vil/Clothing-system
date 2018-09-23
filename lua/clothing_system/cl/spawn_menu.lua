@@ -104,37 +104,42 @@ spawnmenu.AddCreationTab( "Clothing", function()
 
 end, "icon16/user_suit.png", 50 )
 
+local isAddedItems = false
+ClothingSystem.Tools.Hooks.AddHook( "SpawnMenuOpen", function()
+	if (isAddedItems) then return end
+	spawnmenu.AddContentType( "clothing_system", function( container, obj )
+		if !obj.material then return end
+		if !obj.nicename then return end
+		if !obj.spawnname then return end
 
-spawnmenu.AddContentType( "clothing_system", function( container, obj )
-	if !obj.material then return end
-	if !obj.nicename then return end
-	if !obj.spawnname then return end
-
-	local icon = vgui.Create( "ContentIcon", container )
-	icon:SetContentType( "clothing_system" )
-	icon:SetSpawnName( obj.spawnname )
-	icon:SetName( obj.nicename )
-	icon:SetMaterial( obj.material )
-	icon:SetAdminOnly( obj.admin )
-	icon:SetColor( Color( 0, 0, 0, 255 ) )
-	icon.DoClick = function()
-		if (obj.admin) then
-			if (!LocalPlayer():IsAdmin() && !LocalPlayer():IsSuperAdmin()) then return end
+		local icon = vgui.Create( "ContentIcon", container )
+		icon:SetContentType( "clothing_system" )
+		icon:SetSpawnName( obj.spawnname )
+		icon:SetName( obj.nicename )
+		icon:SetMaterial( obj.material )
+		icon:SetAdminOnly( obj.admin )
+		icon:SetColor( Color( 0, 0, 0, 255 ) )
+		icon.DoClick = function()
+			if (obj.admin) then
+				if (!LocalPlayer():IsAdmin() && !LocalPlayer():IsSuperAdmin()) then return end
+			end
+			ClothingSystem.Tools.Network.Send("SendToServer", "SpawnEntity", {class = obj.spawnname})
+			surface.PlaySound( "ui/buttonclickrelease.wav" )
 		end
-		ClothingSystem.Tools.Network.Send("SendToServer", "SpawnEntity", {class = obj.spawnname})
-		surface.PlaySound( "ui/buttonclickrelease.wav" )
-	end
-	icon.OpenMenu = function( icon )
+		icon.OpenMenu = function( icon )
 
-		local menu = DermaMenu()
-			menu:AddOption( ClothingSystem.Language.spawnMenuCopy, function() SetClipboardText( obj.spawnname ) end )
-		menu:Open()
+			local menu = DermaMenu()
+				menu:AddOption( ClothingSystem.Language.spawnMenuCopy, function() SetClipboardText( obj.spawnname ) end )
+			menu:Open()
 
-	end
-	
-	if IsValid( container ) then
-		container:Add( icon )
-	end
+		end
+		
+		if IsValid( container ) then
+			container:Add( icon )
+		end
 
-	return icon
+		return icon
+	end )
+
+	isAddedItems = true
 end )

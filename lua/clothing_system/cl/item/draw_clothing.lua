@@ -68,7 +68,7 @@ local function DrawClothing(owner)
                 Pos = Pos-Ang:Right()*(outfit.ReplaceItem.xPos || construct.xPos || 0)
                 Pos = Pos-Ang:Up()*(outfit.ReplaceItem.yPos || construct.yPos || 0)
                 Pos = Pos-Ang:Forward()*(outfit.ReplaceItem.zPos || construct.zPos || 0)
-                outfit:SetModelScale(outfit.ReplaceItem.AttachBoneScaleModel || construct.AttachBoneScaleModel || 1, 0)
+                outfit:SetModelScale(outfit.ReplaceItem.ScaleModel || construct.ScaleModel || 1, 0)
             else
                 Ang:RotateAroundAxis(Ang:Up(), outfit.ReplaceItem.xAng || outfit.xAng || 0)
                 Ang:RotateAroundAxis(Ang:Right(), outfit.ReplaceItem.yAng || outfit.yAng || 0)
@@ -76,7 +76,7 @@ local function DrawClothing(owner)
                 Pos = Pos-Ang:Right()*(outfit.ReplaceItem.xPos || outfit.xPos || 0)
                 Pos = Pos-Ang:Up()*(outfit.ReplaceItem.yPos || outfit.yPos || 0)
                 Pos = Pos-Ang:Forward()*(outfit.ReplaceItem.zPos || outfit.zPos || 0)
-                outfit:SetModelScale(outfit.ReplaceItem.AttachBoneScaleModel || outfit.AttachBoneScaleModel || 1, 0)
+                outfit:SetModelScale(outfit.ReplaceItem.ScaleModel || outfit.ScaleModel || 1, 0)
             end
 
             outfit:SetRenderAngles(Ang)

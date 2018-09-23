@@ -25,7 +25,7 @@ list.Set( "clothing_system", "fg_human_lamp_head", {
                                 if ( obj.Class == "fg_human_lamp_head" ) then
                                     local dlight = DynamicLight( pl:EntIndex() )
                                     if ( dlight ) then
-                                        dlight.pos = LocalPlayer():GetPos()
+                                        dlight.pos = obj:GetOwner():GetPos()
                                         dlight.r = 255
                                         dlight.g = 255
                                         dlight.b = 255
@@ -44,8 +44,8 @@ list.Set( "clothing_system", "fg_human_lamp_head", {
     end,
 
     BoneAttach = true,
-    AttachBoneType = "ValveBiped.Bip01_Head1",
-    AttachBoneScaleModel = 0.9,
+    Bone = "ValveBiped.Bip01_Head1",
+    ScaleModel = 0.9,
     xPos = 2.0,
     yPos = 2.0,
     xAng = -90.0,

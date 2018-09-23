@@ -36,6 +36,8 @@ local client = {
     'cl/item/draw_hud.lua',
     'cl/cleanup_rebuild.lua',
     'cl/vgui/clothing_menu.lua',
+    'cl/vgui/vgui_main.lua',
+    'cl/vgui/vgui_clothes_list.lua',
     'cl/sendlua.lua',
 }
 local server = {

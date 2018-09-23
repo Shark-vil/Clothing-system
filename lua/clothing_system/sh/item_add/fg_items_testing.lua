@@ -10,8 +10,8 @@
 --     PlayerBase = "pony",
 
 --     BoneAttach = true,
---     AttachBoneType = "LrigScull",
---     AttachBoneScaleModel = 1,
+--     Bone = "LrigScull",
+--     ScaleModel = 1,
 --     xPos = 0,
 --     yPos = 0,
 --     zPos = 0,
@@ -37,8 +37,8 @@
 --     PlayerBase = "hl2_player",
 
 --     BoneAttach = true,
---     AttachBoneType = "ValveBiped.Bip01_Pelvis",
---     AttachBoneScaleModel = 1,
+--     Bone = "ValveBiped.Bip01_Pelvis",
+--     ScaleModel = 1,
 --     xPos = 0,
 --     yPos = 0,
 --     zPos = 0,

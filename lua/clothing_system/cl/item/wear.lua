@@ -34,17 +34,17 @@ local function wear(len, data)
     -- Установка типа спаривания
     if (!item.Module) then
         if ( item.BoneAttach ) then
-            if (table.Count(ReplaceItem) != 0 && ReplaceItem.AttachBoneType) then
-                Bone = owner:LookupBone(ReplaceItem.AttachBoneType)
-            else
-                Bone = owner:LookupBone(item.AttachBoneType)
+            if (table.Count(ReplaceItem) != 0 && ReplaceItem.Bone) then
+                Bone = owner:LookupBone(ReplaceItem.Bone)
+            elseif (item.Bone != nil) then
+                Bone = owner:LookupBone(item.Bone)
             end
 
             if ( !Bone ) then
                 owner:AddText(ClothingSystem.Language.noFreeBonesFound.."!")
             end
             parentType = "BoneAttach"
-        elseif ( item.BonemergeSystem ) then
+        elseif ( item.Bonemerge ) then
             parentType = "BonemergeSystem"
         end
     end
@@ -66,7 +66,7 @@ local function wear(len, data)
         outfit.xPos = item.xPos || 0
         outfit.yPos = item.yPos || 0
         outfit.zPos = item.zPos || 0
-        outfit.AttachBoneScaleModel = item.AttachBoneScaleModel || 1
+        outfit.ScaleModel = item.ScaleModel || 1
         outfit.Overlay = item.Overlay || false
         if (item.Developing) then
             outfit.Developing = true

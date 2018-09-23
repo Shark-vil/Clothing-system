@@ -58,7 +58,7 @@ function playerMeta:ClothingSystemCheckBone(class, TypePut, insertData)
     if (!IsValid(self) || !self:IsPlayer()) then return end
     if ( !isstring(class) ) then error("Invalid type value - class!") end
 
-    if ( ClothingSystem:GetItem(class).Accessory ) then 
+    if ( ClothingSystem:GetItem(class).Accessory || ClothingSystem:GetItem(class).Module) then 
         local items = ClothingSystem:PlayerGetItems(self)
 
         if ( !ClothingSystem:TableIsEmpty(items) && insertData) then

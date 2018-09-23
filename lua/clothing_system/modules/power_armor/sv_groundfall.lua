@@ -12,7 +12,7 @@ local function dmg(ply, dmginfo)
             local item = list.Get("clothing_system")[class] -- Получаем объект по классу
 
             -- Если есть параметр, выполняем
-            if (item.PowerArmor) then
+            if (item != nil && item.PowerArmor) then
                 if (dmginfo:IsDamageType(DMG_FALL)) then
                     ply:ViewPunch( Angle( math.random(-20, 20), math.random(-20, 20), math.random(-20, 20) ) )
                     dmginfo:ScaleDamage(0)

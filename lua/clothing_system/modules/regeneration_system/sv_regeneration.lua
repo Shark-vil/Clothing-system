@@ -13,7 +13,7 @@ local function regeneration()
                 local item = list.Get("clothing_system")[class] -- Получаем массив одежды по классу
                 
                 -- Выполняем, если параметр регенерации присутствует
-                if ( item != false && item != nil && item.RegenerationHealth != nil && isnumber(item.RegenerationHealth) ) then
+                if (item != nil && item.RegenerationHealth != nil && isnumber(item.RegenerationHealth) ) then
                     local hp = ply:Health() + item.RegenerationHealth
 
                     -- Прибавляем HP до тех пор, пока не будет достигнут максимальный лимит HP у игрока

@@ -67,5 +67,41 @@ ClothingSystem.Tools.Hooks.AddHook("ClothingSystem.PlayerSay", function( ply, te
         end
 
         return ""
+    end
+    
+    command = "/lastdrop"
+    if ( command == string.sub(text, 1, string.len(command)) ) then
+        local items = ClothingSystem:PlayerGetItems(ply)
+
+        if (#items == 0) then return "" end
+        local class = items[#items]
+
+        local ReplaceItem = ClothingSystem:CheckReplace(class, ply)
+        local OpenBones = {}
+
+        local item = list.Get("clothing_system")[class]
+        if (item == nil) then return end
+
+        if (ReplaceItem && ReplaceItem.TypePut) then
+            OpenBones = ReplaceItem.TypePut
+        elseif (item.TypePut) then
+            OpenBones = item.TypePut
+        elseif (item.Accessory) then
+            OpenBones = {}
+        end
+
+        if ( table.Count(items) != 0 ) then
+            if ( table.HasValue(items, class) ) then
+                ClothingSystem:PlayerRemoveItem(ply, class)
+                if (!item.SetPlayerModel) then
+                    ply:ClothingSystemLetBone(class, OpenBones)
+                end
+                hook.Run("ClothingSystemSpawnItem", ply, class)
+
+                ClothingSystem.Tools.Network.Send("Broadcast", "DropItem", {class = class, steamid = ply:SteamID()})
+            end
+        end
+
+        return ""
 	end
 end)

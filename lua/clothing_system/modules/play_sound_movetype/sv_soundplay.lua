@@ -168,6 +168,9 @@ ClothingSystem.Tools.Hooks.AddHook("Think", PlayJump)
 
 -- Звук дыхания через маску
 local function GasMask()
+    local cvar = GetConVar("clothing_system_gasmask_sound_effect")
+    if (cvar != nil && cvar:GetInt() == 0) then return end
+
     for _, ply in pairs(player.GetAll()) do
         if (!IsValid(ply) || !ply:IsPlayer() || !ply:Alive()) then return end -- Проверка на доступность игрока
         if (!ply.ClothingSystemPlayerIsSpawn) then return end -- Проверка на то, что игрок заспавнился

@@ -12,8 +12,8 @@ list.Set( "clothing_system", "life_jacket_water", {
     UnEquipSound = "clothing_system/cs_unequip.wav", -- Звук при снятии
 
     BoneAttach = true,
-    AttachBoneType = "ValveBiped.Bip01_Spine2",
-    AttachBoneScaleModel = 1,
+    Bone = "ValveBiped.Bip01_Spine2",
+    ScaleModel = 1,
     xPos = 0,
     yPos = -13,
     zPos = -3,
