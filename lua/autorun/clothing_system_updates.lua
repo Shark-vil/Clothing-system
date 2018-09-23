@@ -1,44 +1,30 @@
 ClothingSystem = ClothingSystem || {}
 
-ClothingSystem.AddonVersion = "0.3"
+ClothingSystem.AddonVersion = "0.4"
 
 local TEXT = [[
-GitHub commits = https://github.com/Shark-vil/Clothing-system/commits/master <br>
+GitHub commits = https://github.com/Shark-vil/Clothing-system/commit/0281bdf4e76040337d9b6023f0c85cb448173d83 <br>
 __________________________ <br>
 Update: <br>
-1 - Fixed an issue where the player could not change the model when equipping clothes. <br>
-Details: in the addon "Enhanced PlayerModel Selector" was cvar (sv_playermodel_selector_force), which interfered with the normal change of the model, <br>
-about the same as cvar in PAC3 (pac_modifier_model) <br>
-2 - Fixed chat-command: /itemdrop <br>
-<br>
-Next updates: <br>
-1 - Update reference materials <br>
-2 - Create the English version of the wiki <br>
-3 - Add more items <br>
-4 - Add more hooks for interaction <br>
-5 - Change the addition system of weapons and entities to inventory <br>
-6 - Add Mechanics for Roleplaying <br>
-7 - Add clothes for NPC <br>
+1 - Changed variables to create clothes, now they are shorter and simpler.<br>
+2 - Added cvar, which removes the effect of breathing through the mask - clothing_system_gasmask_sound_effect (1/0).<br>
+3 - In the development there is a new menu that can be opened by send the chat /clothing, or by entering the console command - open_new_clothing_menu<br>
+4 - Fixed a bug where the sheets could not load due to the large number of addons.<br>
+__________________________ <br>
+This mod is developed on enthusiasm. I would be glad if you would support me, at least with a small amount of money. <br>
 ]]
 
 if ( GetConVar("clothing_system_language"):GetString() == "ru" ) then
 TEXT = [[
-GitHub commits = https://github.com/Shark-vil/Clothing-system/commits/master <br>
+GitHub commits = https://github.com/Shark-vil/Clothing-system/commit/0281bdf4e76040337d9b6023f0c85cb448173d83 <br>
 __________________________ <br>
 Обновление: <br>
-1 - Исправлена проблема, когда игрок не мог изменить модель при экипировке одежды. <br>
-Подробнее: в аддоне "Enhanced PlayerModel Selector" был cvar (sv_playermodel_selector_force), который мешал нормальной смене моддели, <br>
-примерно так же как cvar в PAC3 (pac_modifier_model) <br>
-2 - Исправлена чат-команда: /itemdrop <br>
-<br>
-Будущие обновления: <br>
-1 - Доработать wiki <br>
-2 - Написать английскую версию wiki <br>
-3 - Добавить больше предметов <br>
-4 - Добавить больше крючков для взаимодействия <br>
-5 - Переделать систему добавление оружия и энтити в инвентарь <br>
-6 - Добавить механики для ролеплея <br>
-7 - Добавить одежду для NPC <br>
+1 - Изменены переменные для создания одежды, теперь они не более короткие и простые.<br>
+2 - Добавлен квар, убирающий эффект дыхания через маску - clothing_system_gasmask_sound_effect (1/0).<br>
+3 - В разработке находится новое меню, которое можно открыть введя в чат /clothing, или введя консольную команду - open_new_clothing_menu<br>
+4 - Исправлена ошибка, когда листы не успевали загружаться из-за большого колличества аддонов.<br>
+__________________________ <br>
+Этот мод разрабатывается на энтузиазме. Я был бы рад, если бы вы поддержали меня, хотя бы небольшой суммой денег. <br>
 ]]
 end
 

@@ -5,16 +5,16 @@ timer.Create(timer_name, 1, 0, function()
     if (!IsValid(ply)) then return end
 
     local version = ClothingSystem.AddonVersion
-    local version_list = {}
+    local oldversion = ""
     local path = "clothing_system/v.dat"
 
     if ( file.Exists(path, "DATA") ) then
-        version_list = util.JSONToTable( file.Read(path, "DATA") ) 
+        oldversion = file.Read(path, "DATA")
     else
-        file.Write(path, "{}")
+        file.Write(path, "")
     end
 
-    if ( !table.HasValue(version_list, version) ) then
+    if ( oldversion != version ) then
         local this_w = ScrW() - 100
         local this_h = ScrH() - 100
 
@@ -41,9 +41,8 @@ timer.Create(timer_name, 1, 0, function()
         html:SetPos( 5, 25 )
         html:SetSize( this_w - 10, this_h - 100 )
 
-        table.insert(version_list, version)
         timer.Simple(0, function () 
-            file.Write( path, util.TableToJSON(version_list) ) 
+            file.Write( path, version ) 
         end)
     end
 
