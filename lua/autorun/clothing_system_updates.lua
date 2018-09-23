@@ -1,6 +1,6 @@
 ClothingSystem = ClothingSystem || {}
 
-ClothingSystem.AddonVersion = "0.4.1"
+ClothingSystem.AddonVersion = "0.4.2"
 
 local TEXT = [[
 GitHub commits = https://github.com/Shark-vil/Clothing-system/commit/0281bdf4e76040337d9b6023f0c85cb448173d83 <br>
@@ -12,6 +12,7 @@ Update: <br>
 4 - Fixed a bug where the sheets could not load due to the large number of addons <br>
 5 - Added a chat command that allows you to remove the last item - /lastdrop <br>
 6 - Fixed the function of creating an arbitrary collision <br>
+7 - Improved scaling of the new menu for a small resolution <br>
 __________________________ <br>
 This mod is developed on enthusiasm. I would be glad if you would support me, at least with a small amount of money. <br>
 ]]
@@ -27,6 +28,7 @@ __________________________ <br>
 4 - Исправлена ошибка, когда листы не успевали загружаться из-за большого колличества аддонов <br>
 5 - Добавлена чат-команда, позволяющая снять последний надетый предмет - /lastdrop <br>
 6 - Исправлена функция создания произвольной коллизии <br>
+7 - Улучшено масштабирование нового меню под маленькое разрешение <br>
 __________________________ <br>
 Этот мод разрабатывается на энтузиазме. Я был бы рад, если бы вы поддержали меня, хотя бы небольшой суммой денег. <br>
 ]]
