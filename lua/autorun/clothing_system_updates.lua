@@ -3,7 +3,7 @@ ClothingSystem = ClothingSystem || {}
 ClothingSystem.AddonVersion = "0.4.2"
 
 local TEXT = [[
-GitHub commits = https://github.com/Shark-vil/Clothing-system/commit/0281bdf4e76040337d9b6023f0c85cb448173d83 <br>
+GitHub commits = https://github.com/Shark-vil/Clothing-system/commits <br>
 __________________________ <br>
 Update: <br>
 1 - Changed variables to create clothes, now they are shorter and simpler <br>
@@ -19,10 +19,10 @@ This mod is developed on enthusiasm. I would be glad if you would support me, at
 
 if ( GetConVar("clothing_system_language"):GetString() == "ru" ) then
 TEXT = [[
-GitHub commits = https://github.com/Shark-vil/Clothing-system/commit/0281bdf4e76040337d9b6023f0c85cb448173d83 <br>
+GitHub commits = https://github.com/Shark-vil/Clothing-system/commits <br>
 __________________________ <br>
 Обновление: <br>
-1 - Изменены переменные для создания одежды, теперь они не более короткие и простые <br>
+1 - Изменены переменные для создания одежды, теперь они более короткие и простые <br>
 2 - Добавлен квар, убирающий эффект дыхания через маску - clothing_system_gasmask_sound_effect (1/0) <br>
 3 - В разработке находится новое меню, которое можно открыть введя в чат /clothing, или введя консольную команду - open_new_clothing_menu <br>
 4 - Исправлена ошибка, когда листы не успевали загружаться из-за большого колличества аддонов <br>
