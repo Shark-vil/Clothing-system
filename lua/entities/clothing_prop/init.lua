@@ -5,11 +5,6 @@ include('shared.lua')
  
 function ENT:Initialize()
 	local min, max = self:GetModelBounds()
-	self:PhysicsInit( SOLID_VPHYSICS )  
-	self:SetMoveType( MOVETYPE_VPHYSICS ) 
-	self:SetSolid( SOLID_VPHYSICS ) 
-
-	self:SetCollisionGroup( COLLISION_GROUP_DEBRIS_TRIGGER )
 	
 	if (self.CustomCollision) then
 		self.PhysCollide = CreatePhysCollideBox( min, max )
@@ -18,9 +13,15 @@ function ENT:Initialize()
 
 	if (self.CustomCollision) then
 		self:PhysicsInitBox( min, max )
+		self:EnableCustomCollisions( true )
+	else
+		self:PhysicsInit( SOLID_VPHYSICS )  
+		self:SetMoveType( MOVETYPE_VPHYSICS ) 
 	end
 
+	self:SetSolid( SOLID_VPHYSICS ) 
 	self:PhysWake()
+	self:SetCollisionGroup( COLLISION_GROUP_DEBRIS_TRIGGER )
 
     local phys = self:GetPhysicsObject()
 	if (phys:IsValid()) then
