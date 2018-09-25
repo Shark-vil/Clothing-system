@@ -1,6 +1,7 @@
-ClothingSystem = ClothingSystem || {}
-
+resource.AddWorkshop(1514708343)
 CreateConVar("clothing_system_installed", 1, { FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED, FCVAR_SERVER_CAN_EXECUTE }, "")
+
+ClothingSystem = ClothingSystem || {}
 
 file.CreateDir("clothing_system")
 file.CreateDir("clothing_system/log")
