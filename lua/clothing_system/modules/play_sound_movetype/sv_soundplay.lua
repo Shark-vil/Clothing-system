@@ -22,7 +22,7 @@ local function WaterSoundEffect()
                     if (istable(ply.ClothingSystemPlaysoundData['AboveWaterSound'][1])) then
                         local ln = table.Count(ply.ClothingSystemPlaysoundData['AboveWaterSound'][1]) -- Число элементов массива
                         local p = ply.ClothingSystemPlaysoundData['AboveWaterSound'][1][math.random(1, ln)] -- Вылавливание рандомного элемента массива
-                        ply:EmitSound(p) -- Проигрыванеи звука
+                        ply:EmitSound(p, 75, 100, 0.5) -- Проигрыванеи звука
                         -- Если игрок бежит
                         if (ply:KeyDown(IN_SPEED)) then
                             ply.ClothingSystemPlaysoundData['isWaterSwiming'] = (SoundDuration(p)/2) + CurTime() -- Устанавливаем урезанный кулдаун
@@ -30,7 +30,7 @@ local function WaterSoundEffect()
                             ply.ClothingSystemPlaysoundData['isWaterSwiming'] = SoundDuration(p) + CurTime() -- Устанавливаем кулдаун по продолжительности звука
                         end
                     else
-                        ply:EmitSound(ply.ClothingSystemPlaysoundData['AboveWaterSound'][1]) -- Проигрыванеи звука
+                        ply:EmitSound(ply.ClothingSystemPlaysoundData['AboveWaterSound'][1], 75, 100, 0.5) -- Проигрыванеи звука
                         -- Если игрок бежит
                         if (ply:KeyDown(IN_SPEED)) then
                             ply.ClothingSystemPlaysoundData['isWaterSwiming'] = (SoundDuration(ply.ClothingSystemPlaysoundData['AboveWaterSound'][1])/2) + CurTime() -- Устанавливаем урезанный кулдаун
@@ -47,7 +47,7 @@ local function WaterSoundEffect()
                     if (istable(ply.ClothingSystemPlaysoundData['UnderWaterSound'][1])) then
                         local ln = table.Count(ply.ClothingSystemPlaysoundData['UnderWaterSound'][1]) -- Число элементов массива
                         local p = ply.ClothingSystemPlaysoundData['UnderWaterSound'][1][math.random(1, ln)] -- Вылавливание рандомного элемента массива
-                        ply:EmitSound(p) -- Проигрыванеи звука
+                        ply:EmitSound(p, 75, 100, 0.5) -- Проигрыванеи звука
                         -- Если игрок бежит
                         if (ply:KeyDown(IN_SPEED)) then
                             ply.ClothingSystemPlaysoundData['isWaterSwiming'] = (SoundDuration(p)/2) + CurTime() -- Устанавливаем урезанный кулдаун
@@ -55,7 +55,7 @@ local function WaterSoundEffect()
                             ply.ClothingSystemPlaysoundData['isWaterSwiming'] = SoundDuration(p) + CurTime() -- Устанавливаем кулдаун по продолжительности звука
                         end
                     else
-                        ply:EmitSound(ply.ClothingSystemPlaysoundData['UnderWaterSound'][1]) -- Проигрыванеи звука
+                        ply:EmitSound(ply.ClothingSystemPlaysoundData['UnderWaterSound'][1], 75, 100, 0.5) -- Проигрыванеи звука
                         -- Если игрок бежит
                         if (ply:KeyDown(IN_SPEED)) then
                             ply.ClothingSystemPlaysoundData['isWaterSwiming'] = (SoundDuration(ply.ClothingSystemPlaysoundData['UnderWaterSound'][1])/2) + CurTime() -- Устанавливаем урезанный кулдаун
@@ -83,9 +83,9 @@ local function PlayDmgFall(ply, dmginfo)
         if (istable(ply.ClothingSystemPlaysoundData['PowerLandingSound'][1])) then
             local ln = table.Count(ply.ClothingSystemPlaysoundData['PowerLandingSound'][1]) -- Число элементов массива
             local p = ply.ClothingSystemPlaysoundData['PowerLandingSound'][1][math.random(1, ln)] -- Вылавливание рандомного элемента массива
-            ply:EmitSound(p) -- Проигрыванеи звука
+            ply:EmitSound(p, 75, 100, 0.5) -- Проигрыванеи звука
         else
-            ply:EmitSound(ply.ClothingSystemPlaysoundData['PowerLandingSound'][1]) -- Проигрыванеи звука
+            ply:EmitSound(ply.ClothingSystemPlaysoundData['PowerLandingSound'][1], 75, 100, 0.5) -- Проигрыванеи звука
         end
     end
 end
@@ -120,9 +120,9 @@ local function PlayJump()
                         if (istable(ply.ClothingSystemPlaysoundData['LandingSound'][1])) then
                             local ln = table.Count(ply.ClothingSystemPlaysoundData['LandingSound'][1]) -- Число элементов массива
                             local p = ply.ClothingSystemPlaysoundData['LandingSound'][1][math.random(1, ln)] -- Вылавливание рандомного элемента массива
-                            ply:EmitSound(p) -- Проигрыванеи звука
+                            ply:EmitSound(p, 75, 100, 0.5) -- Проигрыванеи звука
                         else
-                            ply:EmitSound(ply.ClothingSystemPlaysoundData['LandingSound'][1]) -- Проигрыванеи звука
+                            ply:EmitSound(ply.ClothingSystemPlaysoundData['LandingSound'][1], 75, 100, 0.5) -- Проигрыванеи звука
                         end
                     end
                 end
@@ -149,9 +149,9 @@ local function PlayJump()
             if (istable(ply.ClothingSystemPlaysoundData['JumpSound'][1])) then
                 local ln = table.Count(ply.ClothingSystemPlaysoundData['JumpSound'][1]) -- Число элементов массива
                 local p = ply.ClothingSystemPlaysoundData['JumpSound'][1][math.random(1, ln)] -- Вылавливание рандомного элемента массива
-                ply:EmitSound(p) -- Проигрыванеи звука
+                ply:EmitSound(p, 75, 100, 0.5) -- Проигрыванеи звука
             else
-                ply:EmitSound(ply.ClothingSystemPlaysoundData['JumpSound'][1]) -- Проигрыванеи звука
+                ply:EmitSound(ply.ClothingSystemPlaysoundData['JumpSound'][1], 75, 100, 0.5) -- Проигрыванеи звука
             end
 
             ply.ClothingSystemPlaysoundData['isJumping'] = true
@@ -183,10 +183,10 @@ local function GasMask()
         if (istable(ply.ClothingSystemPlaysoundData['BreathSoundInGasMask'][1])) then
             local ln = table.Count(ply.ClothingSystemPlaysoundData['BreathSoundInGasMask'][1]) -- Число элементов массива
             p = ply.ClothingSystemPlaysoundData['BreathSoundInGasMask'][1][math.random(1, ln)] -- Вылавливание рандомного элемента массива
-            ply:EmitSound(p) -- Проигрыванеи звука
+            ply:EmitSound(p, 75, 100, 0.5) -- Проигрыванеи звука
         else
             p = ply.ClothingSystemPlaysoundData['BreathSoundInGasMask'][1]
-            ply:EmitSound(p) -- Проигрыванеи звука
+            ply:EmitSound(p, 75, 100, 0.5) -- Проигрыванеи звука
         end
         
         ply.ClothingSystemPlaysoundData['isGasMaskCurTime'] = CurTime() + SoundDuration(p)
@@ -208,9 +208,9 @@ local function PlayFootstep( ply )
         if (istable(ply.ClothingSystemPlaysoundData['RunSound'][1])) then
             local ln = table.Count(ply.ClothingSystemPlaysoundData['RunSound'][1]) -- Число элементов массива
             local p = ply.ClothingSystemPlaysoundData['RunSound'][1][math.random(1, ln)] -- Вылавливание рандомного элемента массива
-            ply:EmitSound(p) -- Проигрыванеи звука
+            ply:EmitSound(p, 75, 100, 0.5) -- Проигрыванеи звука
         else
-            ply:EmitSound(ply.ClothingSystemPlaysoundData['RunSound'][1]) -- Проигрыванеи звука
+            ply:EmitSound(ply.ClothingSystemPlaysoundData['RunSound'][1], 75, 100, 0.5) -- Проигрыванеи звука
         end
 
         return true
@@ -219,9 +219,9 @@ local function PlayFootstep( ply )
         if (istable(ply.ClothingSystemPlaysoundData['WalkSound'][1])) then
             local ln = table.Count(ply.ClothingSystemPlaysoundData['WalkSound'][1]) -- Число элементов массива
             local p = ply.ClothingSystemPlaysoundData['WalkSound'][1][math.random(1, ln)] -- Вылавливание рандомного элемента массива
-            ply:EmitSound(p) -- Проигрыванеи звука
+            ply:EmitSound(p, 75, 100, 0.5) -- Проигрыванеи звука
         else
-            ply:EmitSound(ply.ClothingSystemPlaysoundData['WalkSound'][1]) -- Проигрыванеи звука
+            ply:EmitSound(ply.ClothingSystemPlaysoundData['WalkSound'][1], 75, 100, 0.5) -- Проигрыванеи звука
         end
 
         return true
@@ -230,9 +230,9 @@ local function PlayFootstep( ply )
             -- Проверяем тип переменной: массив, или строка
             local ln = table.Count(ply.ClothingSystemPlaysoundData['WalkSound'][1]) -- Число элементов массива
             local p = ply.ClothingSystemPlaysoundData['WalkSound'][1][math.random(1, ln)] -- Вылавливание рандомного элемента массива
-            ply:EmitSound(p) -- Проигрыванеи звука
+            ply:EmitSound(p, 75, 100, 0.5) -- Проигрыванеи звука
         else
-            ply:EmitSound(ply.ClothingSystemPlaysoundData['WalkSound'][1]) -- Проигрыванеи звука
+            ply:EmitSound(ply.ClothingSystemPlaysoundData['WalkSound'][1], 75, 100, 0.5) -- Проигрыванеи звука
         end
 
         return true

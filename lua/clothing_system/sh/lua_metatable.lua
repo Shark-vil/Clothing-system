@@ -298,7 +298,7 @@ local META = {
     -- Спавн энтити с одеждой
     ItemSpawn = function(self, item_class, ply, spawn_menu)
         if SERVER then
-            if (!IsValid(ply) || !ply:IsPlayer()) then return end
+            if (!IsValid(ply) || !ply:IsPlayer()) then return false end
             if (spawn_menu) then
                 local cvar = GetConVar("sbox_maxsents")
                 if (cvar) then
@@ -310,7 +310,7 @@ local META = {
                     end
 
                     if (cvar:GetInt() <= max) then
-                        return
+                        return false
                     end
                 end
             end
@@ -346,6 +346,13 @@ local META = {
         
             -- Спавним item для использования одежды
             local list = list[item_class]
+
+            if (list.WireModel == nil || !util.IsValidModel(list.WireModel)) then
+                return
+            elseif (list.FoldedModel == nil || !util.IsValidModel(list.FoldedModel)) then
+                list.FoldedModel = "models/props_c17/SuitCase_Passenger_Physics.mdl"
+            end
+
             local item = ents.Create( "clothing_prop" )
             item.DisableUse = false
             item.Group = "clothing_system"

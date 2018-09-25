@@ -1,4 +1,4 @@
-resource.AddWorkshop(1514708343)
+if SERVER then resource.AddWorkshop(1514708343) end
 CreateConVar("clothing_system_installed", 1, { FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED, FCVAR_SERVER_CAN_EXECUTE }, "")
 
 ClothingSystem = ClothingSystem || {}
@@ -51,6 +51,7 @@ local server = {
     'sv/open_vgui.lua',
     'sv/player_death_or_disconnected.lua',
     'sv/cleanup_rebuild.lua',
+    'sv/player_change_base.lua',
 }
 
 local function _AddCSLuaFile(file)

@@ -25,6 +25,7 @@ function ENT:Initialize()
 
     local phys = self:GetPhysicsObject()
 	if (phys:IsValid()) then
+		phys:SetMaterial( "rock" )
 		phys:Wake()
 	end
 end

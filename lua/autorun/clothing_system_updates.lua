@@ -1,34 +1,38 @@
 ClothingSystem = ClothingSystem || {}
 
-ClothingSystem.AddonVersion = "0.4.2"
+ClothingSystem.AddonVersion = "0.4.4"
 
 local TEXT = [[
-GitHub commits = https://github.com/Shark-vil/Clothing-system/commits <br>
+GitHub commits - https://github.com/Shark-vil/Clothing-system/commits <br>
+Open the update menu (Console command) - clothing_system_updates <br>
 __________________________ <br>
 Update: <br>
-1 - Changed variables to create clothes, now they are shorter and simpler <br>
-2 - Added cvar, which removes the effect of breathing through the mask - clothing_system_gasmask_sound_effect (1/0) <br>
-3 - In the development there is a new menu that can be opened by send the chat /clothing, or by entering the console command - open_new_clothing_menu<br>
-4 - Fixed a bug where the sheets could not load due to the large number of addons <br>
-5 - Added a chat command that allows you to remove the last item - /lastdrop <br>
-6 - Fixed the function of creating an arbitrary collision <br>
-7 - Improved scaling of the new menu for a small resolution <br>
+<h1>!!! >> WARNING << !!! </h1><br>
+1 - All models have been removed from the packs, and now they are not present in the collection. To re-display the models, subscribe to all the mods in the assembly! <br>
+<a href="https://steamcommunity.com/workshop/filedetails/?id=1515299286">https://steamcommunity.com/workshop/filedetails/?id=1515299286</a> <br>
+2 - The system of protection of the network channel is improved. Now the private key is generated not only on the server, but also on the client, but access to it is still impossible. <br>
+3 - All sounds are reduced by 50 percent. <br>
+4 - Added a new pack of things (PayDay 2) - <a href="https://steamcommunity.com/sharedfiles/filedetails/?edit=true&id=1522907995">https://steamcommunity.com/sharedfiles/filedetails/?edit=true&id=1522907995</a> <br>
+Errors: <br>
+1 - Accidentally deleted all the covers of objects. I'll fix it in the next update. <br>
 __________________________ <br>
 This mod is developed on enthusiasm. I would be glad if you would support me, at least with a small amount of money. <br>
 ]]
 
 if ( GetConVar("clothing_system_language"):GetString() == "ru" ) then
 TEXT = [[
-GitHub commits = https://github.com/Shark-vil/Clothing-system/commits <br>
+GitHub commits - https://github.com/Shark-vil/Clothing-system/commits <br>
+Открыть меню обновлений (Консольная команда) - clothing_system_updates <br>
 __________________________ <br>
 Обновление: <br>
-1 - Изменены переменные для создания одежды, теперь они более короткие и простые <br>
-2 - Добавлен квар, убирающий эффект дыхания через маску - clothing_system_gasmask_sound_effect (1/0) <br>
-3 - В разработке находится новое меню, которое можно открыть введя в чат /clothing, или введя консольную команду - open_new_clothing_menu <br>
-4 - Исправлена ошибка, когда листы не успевали загружаться из-за большого колличества аддонов <br>
-5 - Добавлена чат-команда, позволяющая снять последний надетый предмет - /lastdrop <br>
-6 - Исправлена функция создания произвольной коллизии <br>
-7 - Улучшено масштабирование нового меню под маленькое разрешение <br>
+<h1>!!! >> ВНИМАНИЕ << !!! </h1><br>
+1 - Все модели были удалены из паков, и теперь они не вшиты в коллекцию. Чтобы вновь отображались модели, подпишитесь на все моды в сборке! <br>
+<a href="https://steamcommunity.com/workshop/filedetails/?id=1515299286">https://steamcommunity.com/workshop/filedetails/?id=1515299286</a> <br>
+2 - Улучшена система защиты сетевого канала. Теперь приватный ключ формируется не только на сервере, но и на клиенте, однако доступ к нему всё так же невозможен. <br>
+3 - Все звуки уменьшены на 50 процентов. <br>
+4 - Добавлен новый пак вещей (PayDay 2) - <a href="https://steamcommunity.com/sharedfiles/filedetails/?edit=true&id=1522907995">https://steamcommunity.com/sharedfiles/filedetails/?edit=true&id=1522907995</a> <br>
+Ошибки: <br>
+1 - Случайно удалил все обложки объектов. Починю в следующем обновлении. <br>
 __________________________ <br>
 Этот мод разрабатывается на энтузиазме. Я был бы рад, если бы вы поддержали меня, хотя бы небольшой суммой денег. <br>
 ]]

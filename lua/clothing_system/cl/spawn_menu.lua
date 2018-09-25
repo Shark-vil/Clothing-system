@@ -36,6 +36,7 @@ ClothingSystem.Tools.Hooks.AddHook("PopulateClothingSystem", function( pnlConten
 	local Clothing = list.Get( "clothing_system" )
 	if Clothing then	
 		for k, v in pairs( Clothing ) do
+	
 			v.Category = v.Category or "Other"
 			Categorised[ v.Category ] = Categorised[ v.Category ] or {}
 			v.ClassName = k
