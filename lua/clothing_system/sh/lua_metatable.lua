@@ -299,6 +299,21 @@ local META = {
     ItemSpawn = function(self, item_class, ply, spawn_menu)
         if SERVER then
             if (!IsValid(ply) || !ply:IsPlayer()) then return end
+            if (spawn_menu) then
+                local cvar = GetConVar("sbox_maxsents")
+                if (cvar) then
+                    local max = 0
+                    for _, v in ipairs(ents.GetAll()) do
+                        if (v.OwnerID == ply:UserID() && v:GetClass() == "clothing_prop") then
+                            max = max + 1
+                        end
+                    end
+
+                    if (cvar:GetInt() <= max) then
+                        return
+                    end
+                end
+            end
 
             local ray
         
@@ -335,6 +350,7 @@ local META = {
             item.DisableUse = false
             item.Group = "clothing_system"
             item.Class = item_class
+            item.OwnerID = ply:UserID()
             item["saveArray"] = {}
             item:SetModel( list.FoldedModel )
             if (list.Skin != nil && isnumber(list.Skin)) then

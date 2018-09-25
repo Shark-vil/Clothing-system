@@ -204,13 +204,13 @@ if SERVER then
             sender:Kick("[ClothingSystem][Protected]: Invalid secret key.")
         end
 
-        if (ClothingSystem.Config.NetworkPtotectSystem ) then
-            local SpamQueryDetected = 10
+        if (ClothingSystem.Config.NetworkPtotectSystem) then
+            local SpamQueryDetected = 5
             local WarningQuery = SpamQueryDetected + 5
             local BanQuery = WarningQuery + 5
             local CoolDownAdd = 0.2
             if (identifier == "SpawnEntity") then
-                CoolDownAdd = 5
+                CoolDownAdd = 0.5
             end
             local SenderSteamID = sender:SteamID()
             local userCell = ClothingSystem.Tools.Network.Protected[SenderSteamID] || {}
@@ -262,9 +262,9 @@ if SERVER then
             ClothingSystem.Tools.Network.Protected[SenderSteamID] = userCell
         end
 
-        if (ClothingSystem.Config.NetworkPtotectSystem) then
-            if (secretkey == nil || secretkey != CLOTHING_SYSTEM_PRIVATE_KEY) then return end
-        end
+        -- if (ClothingSystem.Config.NetworkPtotectSystem) then
+        --     if (secretkey == nil || secretkey != CLOTHING_SYSTEM_PRIVATE_KEY) then return end
+        -- end
         if (netType == nil || identifier == nil || array == nil) then return end
         
         if (netType == "sendtoserver") then
