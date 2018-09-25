@@ -1,14 +1,33 @@
 AddCSLuaFile()
-ClothingSystem = ClothingSystem || {}
-local CreatingStartingMachineKey = "66AS7gg!svavjsdu16IT@G!KL5asF12"
+if SERVER then
+    util.AddNetworkString("Tools.NetWork.ClothingSystem.ToServer")
+    util.AddNetworkString("Tools.NetWork.ClothingSystem.ToClient")
+    util.AddNetworkString("Tools.NetWork.ClothingSystem.ToClientInitialKey")
+end
 
--- for i2 = 1, math.random(10, 15) do
---     if (math.random(0, 1) == 1) then
---         CreatingStartingMachineKey = CreatingStartingMachineKey..string.char(math.random(65, 90))
---     else
---         CreatingStartingMachineKey = CreatingStartingMachineKey..tostring(math.random(0, 1000))
---     end
--- end
+ClothingSystem = ClothingSystem || {}
+local CLOTHING_SYSTEM_PRIVATE_KEY = ""
+
+if SERVER then
+    for i2 = 1, math.random(10, 15) do
+        if (math.random(0, 1) == 1) then
+            CLOTHING_SYSTEM_PRIVATE_KEY = CLOTHING_SYSTEM_PRIVATE_KEY..string.char(math.random(65, 90))
+        else
+            CLOTHING_SYSTEM_PRIVATE_KEY = CLOTHING_SYSTEM_PRIVATE_KEY..tostring(math.random(0, 1000))
+        end
+    end
+
+    local function SendPrivateKey( ply )
+        net.Start("Tools.NetWork.ClothingSystem.ToClientInitialKey")
+        net.WriteString(CLOTHING_SYSTEM_PRIVATE_KEY)
+        net.Send(ply)
+    end
+    hook.Add( "PlayerInitialSpawn", "CLOTHING_SYSTEM_SEND_PRIVATE_KEY", SendPrivateKey )
+else
+    net.Receive("Tools.NetWork.ClothingSystem.ToClientInitialKey", function()
+        CLOTHING_SYSTEM_PRIVATE_KEY = net.ReadString()
+    end)
+end
 
 if SERVER then
     hook.Add( "PlayerSay", "HOOK.ClothingSystem.PlayerSay.id."..CurTime(), function( ply, text, team )
@@ -19,11 +38,6 @@ if SERVER then
             end
         end
     end)
-end
-
-if SERVER then
-    util.AddNetworkString("Tools.NetWork.ClothingSystem.ToServer")
-    util.AddNetworkString("Tools.NetWork.ClothingSystem.ToClient")
 end
 
 ClothingSystem.PrivateKeys = ClothingSystem.PrivateKeys || {}
@@ -61,7 +75,7 @@ ClothingSystem.Tools.Network.SavedNetworkFunctions = ClothingSystem.Tools.Networ
 ClothingSystem.Tools.Network.Protected = ClothingSystem.Tools.Network.Protected || {}
 
 ClothingSystem.Tools.Network.Call = function(identifier, len, array, player, receiver)
-    if (CreatingStartingMachineKey == nil) then return end
+    if (CLOTHING_SYSTEM_PRIVATE_KEY == nil) then return end
     
     if (ClothingSystem.Tools.Network.SavedNetworkFunctions["ClothingSystem."..identifier] != nil) then
         if (receiver != nil) then
@@ -162,7 +176,7 @@ ClothingSystem.Tools.Network.Send = function(netType, identifier, array, sender,
                 net.WriteString("sendtoserver")
                 net.WriteString(identifier)
                 net.WriteTable(array)
-                net.WriteString(CreatingStartingMachineKey)
+                net.WriteString(CLOTHING_SYSTEM_PRIVATE_KEY)
             net.SendToServer()
 
             return true
@@ -186,13 +200,17 @@ if SERVER then
         local array = net.ReadTable()
         local secretkey = net.ReadString()
 
-        if (ClothingSystem.Config.NetworkPtotectSystem) then
+        if (secretkey != CLOTHING_SYSTEM_PRIVATE_KEY) then
+            sender:Kick("[ClothingSystem][Protected]: Invalid secret key.")
+        end
+
+        if (ClothingSystem.Config.NetworkPtotectSystem ) then
             local SpamQueryDetected = 10
             local WarningQuery = SpamQueryDetected + 5
             local BanQuery = WarningQuery + 5
             local CoolDownAdd = 0.2
             if (identifier == "SpawnEntity") then
-                CoolDownAdd = 0.6
+                CoolDownAdd = 5
             end
             local SenderSteamID = sender:SteamID()
             local userCell = ClothingSystem.Tools.Network.Protected[SenderSteamID] || {}
@@ -229,14 +247,14 @@ if SERVER then
 
                 if (ClothingSystem.Config.NetworkPtotectSystemBannedSpam) then
                     if (userCell.Query >= BanQuery) then
-                        sender:Kick("Detected net hack.")
+                        sender:Kick("[ClothingSystem][Protected]: Network channel spam.")
                         return
                     end
                 end
 
             elseif (userCell.CoolDown < CurTime()) then
                 if (userCell.Query > 0) then
-                    userCell.Query = userCell.Query - 1
+                    userCell.Query = 0
                 end
                 userCell.CoolDown = CurTime() + CoolDownAdd
             end
@@ -245,7 +263,7 @@ if SERVER then
         end
 
         if (ClothingSystem.Config.NetworkPtotectSystem) then
-            if (secretkey == nil || secretkey != CreatingStartingMachineKey) then return end
+            if (secretkey == nil || secretkey != CLOTHING_SYSTEM_PRIVATE_KEY) then return end
         end
         if (netType == nil || identifier == nil || array == nil) then return end
         
