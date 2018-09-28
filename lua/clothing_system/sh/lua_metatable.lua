@@ -223,7 +223,9 @@ local META = {
             read['other'] = {}
         end
 
-        table.insert(ply.ClothingSystemWearList, data)
+        if (!table.HasValue(ply.ClothingSystemWearList, data)) then
+            table.insert(ply.ClothingSystemWearList, data)
+        end
 
         file.Write(user_file, util.TableToJSON(read, true))
 	end,
@@ -272,7 +274,7 @@ local META = {
     end,
 
     -- Получить одежду игрока
-    PlayerGetItems = function(self, ply)
+    PlayerGetItems = function(self, ply, isGame)
         if (!IsValid(ply) || !ply:IsPlayer() || ply:SteamID() == "BOT") then return end
         
         local steamid = ply:ClothingSystemGetNormalSteamID64()
@@ -287,9 +289,11 @@ local META = {
             file.CreateDir("clothing_system/cloth_players_data/"..steamid)
         end
 
-        if ( file.Exists(user_file, "DATA") ) then
+        if ( !isGame && file.Exists(user_file, "DATA") ) then
             local user_file = util.JSONToTable(file.Read(user_file, "DATA"))
             return user_file['items'] || {}
+        elseif ( isGame && ply.ClothingSystemWearList ) then
+            return ply.ClothingSystemWearList || {}
         else
             return {}
         end
@@ -698,6 +702,9 @@ local META = {
         ClothingSystem.Tools.Network.Send(network, "WearEveryone", {class = class,steamid = ply:SteamID(), ReplaceItem = ReplaceItem}, sender, ply)
 
         -- Добавляем item в data файл
+        if (!table.HasValue(ply.ClothingSystemWearList, class)) then
+            table.insert(ply.ClothingSystemWearList, class)
+        end
         if (insertData) then
             ClothingSystem:PlayerAddItem(ply, class)
         end

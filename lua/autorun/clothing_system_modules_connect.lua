@@ -52,6 +52,7 @@ local server = {
     'sv/player_death_or_disconnected.lua',
     'sv/cleanup_rebuild.lua',
     'sv/player_change_base.lua',
+    'sv/developers.lua',
 }
 
 local function _AddCSLuaFile(file)

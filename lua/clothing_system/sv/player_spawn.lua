@@ -2,7 +2,7 @@
 local function PlayerSpawn(ply)
     if (ply:SteamID() == "BOT") then return end
 
-    local tm = 4
+    local tm = 5
 
     if (ply.ClothingSystemPlayerIsSpawn) then
         tm = 0
