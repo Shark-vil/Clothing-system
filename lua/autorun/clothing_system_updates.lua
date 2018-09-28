@@ -7,6 +7,9 @@ GitHub commits - https://github.com/Shark-vil/Clothing-system/commits <br>
 Open the update menu (Console command) - clothing_system_updates <br>
 __________________________ <br>
 Update: <br>
+1 - Added developer functions - <a href="https://github.com/Shark-vil/Clothing-system/wiki/Developer-functions">https://github.com/Shark-vil/Clothing-system/wiki/Developer-functions</a>
+
+<h1>Old updates.</h1>
 <h1>!!! >> WARNING << !!! </h1><br>
 1 - All models have been removed from the packs, and now they are not present in the collection. To re-display the models, subscribe to all the mods in the assembly! <br>
 <a href="https://steamcommunity.com/workshop/filedetails/?id=1515299286">https://steamcommunity.com/workshop/filedetails/?id=1515299286</a> <br>
@@ -25,6 +28,9 @@ GitHub commits - https://github.com/Shark-vil/Clothing-system/commits <br>
 Открыть меню обновлений (Консольная команда) - clothing_system_updates <br>
 __________________________ <br>
 Обновление: <br>
+1 - Добавлены функции разработчика - <a href="https://github.com/Shark-vil/Clothing-system/wiki/Developer-functions">https://github.com/Shark-vil/Clothing-system/wiki/Developer-functions</a>
+
+<h1>Старые обновления.</h1>
 <h1>!!! >> ВНИМАНИЕ << !!! </h1><br>
 1 - Все модели были удалены из паков, и теперь они не вшиты в коллекцию. Чтобы вновь отображались модели, подпишитесь на все моды в сборке! <br>
 <a href="https://steamcommunity.com/workshop/filedetails/?id=1515299286">https://steamcommunity.com/workshop/filedetails/?id=1515299286</a> <br>
