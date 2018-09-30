@@ -1,6 +1,6 @@
 ClothingSystem = ClothingSystem || {}
 
-ClothingSystem.AddonVersion = "0.4.4"
+ClothingSystem.AddonVersion = "0.4.5"
 
 local TEXT = [[
 GitHub commits - https://github.com/Shark-vil/Clothing-system/commits <br>
