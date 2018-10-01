@@ -129,12 +129,12 @@ end, "icon16/user_suit.png", 50 )
 				if (!LocalPlayer():IsAdmin() && !LocalPlayer():IsSuperAdmin()) then return end
 			end
 
-			local list = list.Get("clothing_system")[obj.spawnname]
-			if (list == nil) then 
-				return
-			elseif (list.WireModel == nil || !util.IsValidModel(list.WireModel)) then
-                return
-            end
+			-- local list = list.Get("clothing_system")[obj.spawnname]
+			-- if (list == nil) then 
+			-- 	return
+			-- elseif (list.WireModel == nil || !util.IsValidModel(list.WireModel)) then
+            --     return
+            -- end
 			
 			ClothingSystem.Tools.Network.Send("SendToServer", "SpawnEntity", {class = obj.spawnname})
 			surface.PlaySound( "ui/buttonclickrelease.wav" )
