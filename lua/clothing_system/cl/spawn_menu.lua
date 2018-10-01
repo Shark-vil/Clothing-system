@@ -13,13 +13,13 @@ local function IsAdminOnly(Clothing)
 		if (Clothing.OnlyAdmin) then
 			return true
 		end
-	elseif (Clothing.GroupDressList != nil && (istable(Clothing.GroupDressList) || isstring(Clothing.GroupDressList))) then
-		if (istable(Clothing.GroupDressList)) then
-			if (table.Count(Clothing.GroupDressList) != 0) then
+	elseif (Clothing.GroupDress != nil && (istable(Clothing.GroupDress) || isstring(Clothing.GroupDress))) then
+		if (istable(Clothing.GroupDress)) then
+			if (table.Count(Clothing.GroupDress) != 0) then
 				return true
 			end
-		elseif (isstring(Clothing.GroupDressList)) then
-			if (string.len(Clothing.GroupDressList) != 0) then
+		elseif (isstring(Clothing.GroupDress)) then
+			if (string.len(Clothing.GroupDress) != 0) then
 				return true
 			end
 		end
@@ -105,13 +105,17 @@ spawnmenu.AddCreationTab( "Clothing", function()
 
 end, "icon16/user_suit.png", 50 )
 
-local isAddedItems = false
-ClothingSystem.Tools.Hooks.AddHook( "SpawnMenuOpen", function()
-	if (isAddedItems) then return end
+-- local isAddedItems = false
+-- ClothingSystem.Tools.Hooks.AddHook( "SpawnMenuOpen", function()
+-- 	if (isAddedItems) then return end
 	spawnmenu.AddContentType( "clothing_system", function( container, obj )
-		if !obj.material then return end
-		if !obj.nicename then return end
-		if !obj.spawnname then return end
+		-- if !obj.material then return end
+		-- if !obj.nicename then return end
+		-- if !obj.spawnname then return end
+		
+		obj.spawnname = obj.spawnname || "_None_"
+		obj.nicename = obj.nicename || "_None_"
+		obj.material = obj.material || ""
 
 		local icon = vgui.Create( "ContentIcon", container )
 		icon:SetContentType( "clothing_system" )
@@ -124,6 +128,14 @@ ClothingSystem.Tools.Hooks.AddHook( "SpawnMenuOpen", function()
 			if (obj.admin) then
 				if (!LocalPlayer():IsAdmin() && !LocalPlayer():IsSuperAdmin()) then return end
 			end
+
+			local list = list.Get("clothing_system")[obj.spawnname]
+			if (list == nil) then 
+				return
+			elseif (list.WireModel == nil || !util.IsValidModel(list.WireModel)) then
+                return
+            end
+			
 			ClothingSystem.Tools.Network.Send("SendToServer", "SpawnEntity", {class = obj.spawnname})
 			surface.PlaySound( "ui/buttonclickrelease.wav" )
 		end
@@ -142,5 +154,5 @@ ClothingSystem.Tools.Hooks.AddHook( "SpawnMenuOpen", function()
 		return icon
 	end )
 
-	isAddedItems = true
-end )
+-- 	isAddedItems = true
+-- end )
