@@ -79,7 +79,7 @@ ClothingSystem.Tools.Hooks.AddHook("PopulateClothingSystem", function( pnlConten
 					nicename	= ent.PrintName or ent.ClassName,
 					spawnname	= ent.ClassName,
 					material	= img,
-					admin		= ent.AdminOnly
+					admin		= ent.AdminOnly,
 				} )
 				
 			end
@@ -113,9 +113,10 @@ end, "icon16/user_suit.png", 50 )
 		-- if !obj.nicename then return end
 		-- if !obj.spawnname then return end
 		
-		obj.spawnname = obj.spawnname || "_None_"
-		obj.nicename = obj.nicename || "_None_"
-		obj.material = obj.material || ""
+		obj.spawnname 	= obj.spawnname || "None"
+		obj.nicename 	= obj.nicename 	|| "None"
+		obj.material 	= obj.material 	|| ""
+		obj.admin 		= obj.admin 	|| false
 
 		local icon = vgui.Create( "ContentIcon", container )
 		icon:SetContentType( "clothing_system" )
@@ -131,8 +132,10 @@ end, "icon16/user_suit.png", 50 )
 
 			-- local list = list.Get("clothing_system")[obj.spawnname]
 			-- if (list == nil) then 
+			-- 	LocalPlayer():AddText("Missing item.")
 			-- 	return
 			-- elseif (list.WireModel == nil || !util.IsValidModel(list.WireModel)) then
+			-- 	LocalPlayer():AddText(ClothingSystem.Language.ModelNotFound)
             --     return
             -- end
 			

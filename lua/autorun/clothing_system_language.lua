@@ -13,6 +13,7 @@ eng_pack.unsuitableClothesRank = "Your rank does not allow you to equip this ite
 eng_pack.adminOnly = "This clothing is for admin only"
 eng_pack.noFreeBonesFound = "WARNING: No bone was found for attachment"
 eng_pack.spawnMenuCopy = "Copy to Clipboard"
+eng_pack.ModelNotFound = "Model not found! Check the addons for missing files."
 
 eng_pack.vguiInDevelopment = "Function in development"
 
@@ -48,6 +49,7 @@ rus_pack.unsuitableClothesRank = "Ваш ранг не позволяет вам
 rus_pack.adminOnly = "Эта одежда предназначена только для администратора"
 rus_pack.noFreeBonesFound = "Предупреждение: не найдено подходящих костей для крепления"
 rus_pack.spawnMenuCopy = "Скопировать в буфер обмена"
+rus_pack.ModelNotFound = "Модель не найдена! Проверьте дополнения на отсутствующие файлы."
 
 rus_pack.vguiInDevelopment = "Функция в разработке"
 

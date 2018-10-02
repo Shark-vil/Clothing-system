@@ -8,10 +8,43 @@ local function dmg(ply, dmginfo)
     local NewScale = 1 -- Параметр получения урона
     
     -- Проверка массива на пустоту
-    if (!ClothingSystem:TableIsEmpty(items)) then
+    if (items != nil && istable(items) && table.Count(items) != 0) then
         -- Цикл по всем элементам массива
         for _, class in pairs(items) do
             local item = list.Get("clothing_system")[class] -- Получаем объект по классу
+
+            if (item != nil && item.PowerArmor) then
+                if (dmginfo:IsDamageType(DMG_FALL)) then
+                    ply:ViewPunch( Angle( math.random(-20, 20), math.random(-20, 20), math.random(-20, 20) ) )
+                    dmginfo:ScaleDamage(0)
+                    return
+                end
+            end
+
+            if (item.TakesDamagePercent && istable(item.TakesDamagePercent) && table.Count(item.TakesDamagePercent) != 0) then
+                -- Цикл по всем элементам массива
+                for DamageType, value in pairs(item.TakesDamagePercent) do
+                    -- Если есть маска, выполняем
+                    if (item.GasMask) then
+                        if (dmginfo:IsDamageType(DMG_RADIATION)) then
+                            if (ply.ClothingSystemPlaysoundData != nil) then
+                                if (ply.ClothingSystemPlaysoundData['RadiationSound']) then
+                                    if (istable(ply.ClothingSystemPlaysoundData['RadiationSound'][1])) then
+                                        local ln = table.Count(ply.ClothingSystemPlaysoundData['RadiationSound'][1]) -- Число элементов массива
+                                        local p = ply.ClothingSystemPlaysoundData['RadiationSound'][1][math.random(1, ln)] -- Вылавливание рандомного элемента массива
+                                        ply:EmitSound(p, 75, 100, 1, CHAN_AUTO ) -- Проигрыванеи звука
+                                    else
+                                        ply:EmitSound(ply.ClothingSystemPlaysoundData['RadiationSound'][1], 75, 100, 0.5, CHAN_AUTO ) -- Проигрыванеи звука
+                                    end
+                                end
+                            end            
+                            dmginfo:ScaleDamage(0)
+                            return
+                        end
+                    end
+                end
+            end
+
             -- Проверка на существование массива с параметрами дамага
             if (item.TakesDamagePercent != nil && istable(item.TakesDamagePercent) && table.Count(item.TakesDamagePercent) != 0) then
                 if (list.Get("clothing_system")[class].Damage != nil) then

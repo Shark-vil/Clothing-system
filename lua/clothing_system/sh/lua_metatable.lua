@@ -352,6 +352,7 @@ local META = {
             local list = list[item_class]
 
             if (list.WireModel == nil || !util.IsValidModel(list.WireModel)) then
+                ply:AddText(ClothingSystem.Language.ModelNotFound)
                 return
             elseif (list.FoldedModel == nil || !util.IsValidModel(list.FoldedModel)) then
                 list.FoldedModel = "models/props_c17/SuitCase_Passenger_Physics.mdl"
