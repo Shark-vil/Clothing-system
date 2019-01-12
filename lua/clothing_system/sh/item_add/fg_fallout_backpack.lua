@@ -12,12 +12,12 @@ list.Set( "clothing_system", "usgear_backpack", {
 
     BoneAttach = true,
     Bone = "ValveBiped.Bip01_Spine1",
-    ScaleModel = 1,
+    ScaleModel = 0.95,
     xPos = 5,
-    yPos = -25,
+    yPos = -5,
     zPos = 0,
-    xAng = 90,
-    yAng = 180,
+    xAng = -90,
+    yAng = 0,
     zAng = 90,
 
     Pockets = {

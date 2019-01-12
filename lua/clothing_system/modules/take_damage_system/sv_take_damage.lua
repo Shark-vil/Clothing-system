@@ -22,6 +22,10 @@ local function dmg(ply, dmginfo)
             end
 
             if (item.TakesDamagePercent && istable(item.TakesDamagePercent) && table.Count(item.TakesDamagePercent) != 0) then
+                if (list.Get("clothing_system")[class].Damage != nil) then
+                    list.Get("clothing_system")[class].Damage(ply, class, hitgroup, dmginfo)
+                end
+
                 -- Цикл по всем элементам массива
                 for DamageType, value in pairs(item.TakesDamagePercent) do
                     -- Если есть маска, выполняем
@@ -42,24 +46,11 @@ local function dmg(ply, dmginfo)
                             return
                         end
                     end
-                end
-            end
 
-            -- Проверка на существование массива с параметрами дамага
-            if (item.TakesDamagePercent != nil && istable(item.TakesDamagePercent) && table.Count(item.TakesDamagePercent) != 0) then
-                if (list.Get("clothing_system")[class].Damage != nil) then
-                    list.Get("clothing_system")[class].Damage(ply, class, hitgroup, dmginfo)
-                end
-                
-                -- Цикл по всем элементам массива
-                for DamageType, value in pairs (item.TakesDamagePercent) do
-                    
-                    -- Если тип полученого урона совпадает с тем, что в массиве, задаем значение дамага
                     if(dmginfo:IsDamageType(DamageType))then
                         NewScale = NewScale*value
                     end
 
-                    -- Проверка на то, что кость головы занята
                     if (ply:ClothingSystemGetBones().Head != nil && isbool(ply:ClothingSystemGetBones().Head) && ply:ClothingSystemGetBones().Head == true) then
                         -- Если урон был типа DMG_BULLET или DMG_BUCKSHOT, выполняем
                         if (dmginfo:IsDamageType(DMG_BULLET) || dmginfo:IsDamageType(DMG_BUCKSHOT) && DamageType == DMG_BULLET || DamageType == DMG_AIRBOAT || DamageType == 1073741824) then
@@ -78,23 +69,6 @@ local function dmg(ply, dmginfo)
                         end
                     end
                 end
-
-                if (ply.ClothingSystemPlaysoundData != nil) then
-                    if (ply.ClothingSystemPlaysoundData['DamageSoundList'] && ply.ClothingSystemPlaysoundData['isDamageCurTime'] < CurTime()) then
-                        local p
-                        if (istable(ply.ClothingSystemPlaysoundData['DamageSoundList'][1])) then
-                            local ln = table.Count(ply.ClothingSystemPlaysoundData['DamageSoundList'][1]) -- Число элементов массива
-                            p = ply.ClothingSystemPlaysoundData['DamageSoundList'][1][math.random(1, ln)] -- Вылавливание рандомного элемента массива
-                            ply:EmitSound(p, 75, 100, 1, CHAN_AUTO ) -- Проигрыванеи звука
-                        else
-                            p = ply.ClothingSystemPlaysoundData['DamageSoundList'][1]
-                            ply:EmitSound(p, 30, 100, 0.5, CHAN_AUTO ) -- Проигрыванеи звука
-                        end
-                        ply.ClothingSystemPlaysoundData['isDamageCurTime'] = CurTime() + ( SoundDuration(p)/2 )
-                    end
-                end
-
-                -- dmginfo:ScaleDamage(NewScale) -- Применение урона на игрока
             end
         end
 

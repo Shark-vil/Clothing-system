@@ -1,44 +1,36 @@
 ClothingSystem = ClothingSystem || {}
 
-ClothingSystem.AddonVersion = "0.4.5"
+ClothingSystem.AddonVersion = "0.4.6"
 
 local TEXT = [[
-GitHub commits - https://github.com/Shark-vil/Clothing-system/commits <br>
+GitHub commits - <a href="https://github.com/Shark-vil/Clothing-system/commits">https://github.com/Shark-vil/Clothing-system/commits</a> <br>
 Open the update menu (Console command) - clothing_system_updates <br>
 __________________________ <br>
-Update: <br>
-1 - Added developer functions - <a href="https://github.com/Shark-vil/Clothing-system/wiki/Developer-functions">https://github.com/Shark-vil/Clothing-system/wiki/Developer-functions</a>
-
-<h1>Old updates.</h1>
-<h1>!!! >> WARNING << !!! </h1><br>
-1 - All models have been removed from the packs, and now they are not present in the collection. To re-display the models, subscribe to all the mods in the assembly! <br>
-<a href="https://steamcommunity.com/workshop/filedetails/?id=1515299286">https://steamcommunity.com/workshop/filedetails/?id=1515299286</a> <br>
-2 - The system of protection of the network channel is improved. Now the private key is generated not only on the server, but also on the client, but access to it is still impossible. <br>
-3 - All sounds are reduced by 50 percent. <br>
-4 - Added a new pack of things (PayDay 2) - <a href="https://steamcommunity.com/sharedfiles/filedetails/?edit=true&id=1522907995">https://steamcommunity.com/sharedfiles/filedetails/?edit=true&id=1522907995</a> <br>
-Errors: <br>
-1 - Accidentally deleted all the covers of objects. I'll fix it in the next update. <br>
+<h3>What's new?</h3>
+1 - Now you can create a base for clothing. This will make it easier for other users to edit the code.<br>
+<h2>Example:</h2>
+<h1>Before:</h1>
+<img src="https://dl.dropboxusercontent.com/s/t3kxwww36ep3xro/2019-01-12%20%282%29.png" width="650" height="450" /><br>
+<h1>After:</h1>
+<img src="https://dl.dropbox.com/s/drun53hdyxosl2d/2019-01-12%20%283%29.png" width="650" height="450" /><br>
+2 - Minor fixes were made<br>
 __________________________ <br>
 This mod is developed on enthusiasm. I would be glad if you would support me, at least with a small amount of money. <br>
 ]]
 
 if ( GetConVar("clothing_system_language"):GetString() == "ru" ) then
 TEXT = [[
-GitHub commits - https://github.com/Shark-vil/Clothing-system/commits <br>
+GitHub commits - <a href="https://github.com/Shark-vil/Clothing-system/commits">https://github.com/Shark-vil/Clothing-system/commits</a> <br>
 Открыть меню обновлений (Консольная команда) - clothing_system_updates <br>
 __________________________ <br>
-Обновление: <br>
-1 - Добавлены функции разработчика - <a href="https://github.com/Shark-vil/Clothing-system/wiki/Developer-functions">https://github.com/Shark-vil/Clothing-system/wiki/Developer-functions</a>
-
-<h1>Старые обновления.</h1>
-<h1>!!! >> ВНИМАНИЕ << !!! </h1><br>
-1 - Все модели были удалены из паков, и теперь они не вшиты в коллекцию. Чтобы вновь отображались модели, подпишитесь на все моды в сборке! <br>
-<a href="https://steamcommunity.com/workshop/filedetails/?id=1515299286">https://steamcommunity.com/workshop/filedetails/?id=1515299286</a> <br>
-2 - Улучшена система защиты сетевого канала. Теперь приватный ключ формируется не только на сервере, но и на клиенте, однако доступ к нему всё так же невозможен. <br>
-3 - Все звуки уменьшены на 50 процентов. <br>
-4 - Добавлен новый пак вещей (PayDay 2) - <a href="https://steamcommunity.com/sharedfiles/filedetails/?edit=true&id=1522907995">https://steamcommunity.com/sharedfiles/filedetails/?edit=true&id=1522907995</a> <br>
-Ошибки: <br>
-1 - Случайно удалил все обложки объектов. Починю в следующем обновлении. <br>
+<h3>Что нового?</h3>
+1 - Появилась возможность создания базы для одежды. Это позволит другим пользователям проще редактировать код.<br>
+<h2>Пример:</h2>
+<h1>Было:</h1>
+<img src="https://dl.dropboxusercontent.com/s/t3kxwww36ep3xro/2019-01-12%20%282%29.png" width="650" height="450" /><br>
+<h1>Стало:</h1>
+<img src="https://dl.dropbox.com/s/drun53hdyxosl2d/2019-01-12%20%283%29.png" width="650" height="450" /><br>
+2 - Были внесены мелкие исправления<br>
 __________________________ <br>
 Этот мод разрабатывается на энтузиазме. Я был бы рад, если бы вы поддержали меня, хотя бы небольшой суммой денег. <br>
 ]]
@@ -95,13 +87,13 @@ ClothingSystem.VersionDescription = [[
 ]]..TEXT..[[ <br>
 <br>
  ________________________________________________________ <br>                                  
-| Support - https://steamcommunity.com/id/sharkvil1337/   <br>
-| Site - http://flaminggaming.ru                          <br>
+| Support - <a href="https://steamcommunity.com/id/sharkvil1337/">https://steamcommunity.com/id/sharkvil1337/</a>   <br>
+| Site - <a href="http://flaminggaming.ru">http://flaminggaming.ru</a>                          <br>
 | Donate:                                                 <br>
 | Yandex - 410011841936803                                <br>
 | WebMoney WMZ - Z373459260747                            <br>
 | WebMoney WMR - R144443188854                            <br>
- ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾ <br>
+ ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾ <br>
  </body>
  </html>
 ]]

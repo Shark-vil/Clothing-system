@@ -52,6 +52,7 @@ ClothingSystem.Tools.Hooks.AddHook = function(hookName, func)
 
     hook.Add(hookName, "ClothingSystem."..hookName.."."..id, func)
 end
+
 ClothingSystem.Tools.Hooks.Call = function(hookName, gamemodeTable, ...)
     hook.Call(hookName, gamemodeTable, ...)
 end

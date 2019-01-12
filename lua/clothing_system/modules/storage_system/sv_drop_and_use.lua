@@ -47,7 +47,7 @@ ClothingSystem.Tools.Network.AddNetwork("ClothingStorageSystem.EntitySpawner", f
                 entity:Use(ply, entity, USE_ON, 1)
             else
                 entity:SetOwner(ply)
-                if (engine.ActiveGamemode() != "darkrp") then
+                if (engine.ActiveGamemode() != "darkrp" && data['type'] != "weapon") then
                     undo.Create( tostring(entity:GetClass()) )
                         undo.AddEntity( entity )
                         undo.SetPlayer( ply )

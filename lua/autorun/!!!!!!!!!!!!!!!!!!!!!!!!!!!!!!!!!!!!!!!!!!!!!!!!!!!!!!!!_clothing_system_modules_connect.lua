@@ -20,6 +20,7 @@ local shared = {
     'sh/lua_metatable.lua',
     'sh/player_metatable.lua',
     'sh/base_add/base.lua',
+    'sh/base_add/power_armor_base.lua',
     'sh/item_add/fg_human_lamp_head.lua',
     'sh/item_add/fg_hats.lua',
     'sh/item_add/fg_fallout_backpack.lua',

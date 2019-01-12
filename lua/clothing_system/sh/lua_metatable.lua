@@ -346,90 +346,95 @@ local META = {
             SpawnAng.y = SpawnAng.y + 180
         
             -- Получение списка одежды
-            local list = list.Get( "clothing_system" )
-        
-            -- Спавним item для использования одежды
-            local list = list[item_class]
+            ClothingSystem:CheckPresetBase(item_class, ply)
+            local item = list.Get( "clothing_system" )[item_class]
 
-            if (list.WireModel == nil || !util.IsValidModel(list.WireModel)) then
+            if (item.WireModel == nil || !util.IsValidModel(item.WireModel)) then
                 ply:AddText(ClothingSystem.Language.ModelNotFound)
                 return
-            elseif (list.FoldedModel == nil || !util.IsValidModel(list.FoldedModel)) then
-                list.FoldedModel = "models/props_c17/SuitCase_Passenger_Physics.mdl"
+            elseif (item.FoldedModel == nil || !util.IsValidModel(item.FoldedModel)) then
+                item.FoldedModel = "models/props_c17/SuitCase_Passenger_Physics.mdl"
             end
 
-            local item = ents.Create( "clothing_prop" )
-            item.DisableUse = false
-            item.Group = "clothing_system"
-            item.Class = item_class
-            item.OwnerID = ply:UserID()
-            item["saveArray"] = {}
-            item:SetModel( list.FoldedModel )
-            if (list.Skin != nil && isnumber(list.Skin)) then
-                item:SetSkin(list.Skin)
+            -- Спавним item для использования одежды
+            local ent = ents.Create( "clothing_prop" )
+            ent.DisableUse = false
+            ent.Group = "clothing_system"
+            ent.Class = item_class
+            ent.OwnerID = ply:UserID()
+            ent["saveArray"] = {}
+            ent:SetModel( item.FoldedModel )
+            if (item.Skin != nil && isnumber(item.Skin)) then
+                ent:SetSkin(item.Skin)
             end
-            if (list.Bodygroup != nil && istable(list.Bodygroup)) then
-                item:SetBodygroup(list.Bodygroup[1], list.Bodygroup[2])
+            if (item.Bodygroup != nil && istable(item.Bodygroup)) then
+                ent:SetBodygroup(item.Bodygroup[1], item.Bodygroup[2])
             end
-            if (list.Bodygroups != nil && istable(list.Bodygroups)) then
-                item:SetBodygroups(list.Bodygroups)
+            if (item.Bodygroups != nil && istable(item.Bodygroups)) then
+                ent:SetBodygroups(item.Bodygroups)
             end
-            if (list.CustomCollision) then
-                item.CustomCollision = true
+            if (item.CustomCollision) then
+                ent.CustomCollision = true
             end
-            item:SetPos(SpawnPos)
-            item:SetAngles(SpawnAng)
-            item:Spawn()
-            item:Activate()
-            item:DropToFloor()
+            ent:SetPos(SpawnPos)
+            ent:SetAngles(SpawnAng)
+            ent:Spawn()
+            ent:Activate()
+            ent:DropToFloor()
 
             if ( spawn_menu ) then
                 ClothingSystem:log("Player <"..tostring(ply:Nick())..":"..tostring(ply:SteamID()).."> spawn item - "..tostring(item_class))
             end
 
-            hook.Run( "ClothingSystem.ItemSpawn", ply, item_class, item["saveArray"], item)
+            hook.Run( "ClothingSystem.ItemSpawn", ply, item_class, ent["saveArray"], ent)
 
             if (!spawn_menu) then
-                hook.Run( "ClothingSystem.Drop", ply, item_class, item["saveArray"], item)
+                hook.Run( "ClothingSystem.Drop", ply, item_class, ent["saveArray"], ent)
             end
         
             timer.Simple(0.2, function()
-                ClothingSystem.Tools.Network.Send("Broadcast", "ItemFolderDrawToText", {index = item:EntIndex(), class = item_class})
+                ClothingSystem.Tools.Network.Send("Broadcast", "ItemFolderDrawToText", {index = ent:EntIndex(), class = item_class})
             end)
         
             -- Добавляем его в undo лист
             if ( engine.ActiveGamemode() == "darkrp" ) then
                 if ( spawn_menu ) then
-                    undo.Create( "item" )
-                        undo.AddEntity( item )
+                    undo.Create( "clothing_item" )
+                        undo.AddEntity( ent )
                         undo.SetPlayer( ply )
+                        if ( item.Name ~= nil ) then
+                            undo.SetCustomUndoText( "Undone " .. item.Name )
+                        end
                     undo.Finish()
                 end
             else
-                undo.Create( "item" )
-                    undo.AddEntity( item )
+                undo.Create( "clothing_item" )
+                    undo.AddEntity( ent )
                     undo.SetPlayer( ply )
+                    if ( item.Name ~= nil ) then
+                        undo.SetCustomUndoText( "Undone " .. item.Name )
+                    end
                 undo.Finish()
             end
         
-            item:EmitSound("AI_BaseNPC.BodyDrop_Heavy", 75, 100, 1, CHAN_AUTO )
+            ent:EmitSound("AI_BaseNPC.BodyDrop_Heavy", 75, 100, 1, CHAN_AUTO )
             
             -- Проигрываем звук выбрасывания
-            if ( !spawn_menu && list.UnEquipSound ) then
-                if ( list.UnEquipSound && isstring(list.UnEquipSound) ) then
-                    item:EmitSound(list.UnEquipSound)
-                elseif ( list.UnEquipSound && istable(item.UnEquipSound) ) then
-                    item:EmitSound(table.Random(list.UnEquipSound))
+            if ( !spawn_menu && item.UnEquipSound ) then
+                if ( item.UnEquipSound && isstring(item.UnEquipSound) ) then
+                    ent:EmitSound(item.UnEquipSound)
+                elseif ( item.UnEquipSound && istable(ent.UnEquipSound) ) then
+                    ent:EmitSound(table.Random(item.UnEquipSound))
                 end
             end
 
             if ( spawn_menu ) then
                 if ( ClothingSystem:GetItem(item_class).Spawn ) then
-                    ClothingSystem:GetItem(item_class).Spawn(item)
+                    ClothingSystem:GetItem(item_class).Spawn(ent)
                 end
             else
                 if ( ClothingSystem:GetItem(item_class).Drop ) then
-                    ClothingSystem:GetItem(item_class).Drop(ply, item_class, item)
+                    ClothingSystem:GetItem(item_class).Drop(ply, item_class, ent)
                 end
             end
         end
@@ -499,6 +504,30 @@ local META = {
         hook.Run( "ClothingSystem.InitAllowItems", class, ply )
     end,
 
+    CheckPresetBase = function(self, class, ply)
+        if ( SERVER ) then ply:SendLua([[ClothingSystem:CheckPresetBase("]]..class..[[")]]) end
+        local item = list.Get("clothing_system")[class]
+        if (item ~= nil and item.Base ~= nil) then
+            local getbase = list.Get("clothing_system_base")[item.Base]
+            if (getbase ~= nil) then
+                local itemKeys = table.GetKeys( item )
+                for variable_base, value_base in pairs(getbase) do
+                    local replace = true
+                    for _, variable_item in pairs(itemKeys) do
+                        if ( tostring(variable_base) == tostring(variable_item) ) then
+                            replace = false
+                            break
+                        end
+                    end
+                    if (replace) then
+                        item[tostring(variable_base)] = value_base
+                    end
+                end
+                list.Set("clothing_system", class, item)
+            end
+        end
+    end,
+
     WearParts = function(self, class, ply, sender, network, insertData, entity)
         if (sender == nil) then sender = ply end
 
@@ -512,6 +541,7 @@ local META = {
             return false
         end
 
+        ClothingSystem:CheckPresetBase(class, ply)
         local item = list.Get("clothing_system")[class]
 
         local ReplaceItem = ClothingSystem:CheckReplace(class, ply)

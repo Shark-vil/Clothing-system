@@ -116,7 +116,7 @@ ClothingSystem.Tools.Network.AddNetwork("ClothingStorageSystem.SendToServerAddFi
                     _file[DATA['class']][DATA['pocket']]['items'][0][DATA['entityClass']]['model'] = DATA['entityModel']
                     _file[DATA['class']][DATA['pocket']]['items'][0][DATA['entityClass']]['serverside'] = DATA['entitySaveServerside']
                     _file[DATA['class']][DATA['pocket']]['items'][0][DATA['entityClass']]['clientside'] = DATA['entitySaveClientside']
-                    _file[DATA['class']][DATA['pocket']]['items'][0][DATA['entityClass']]['clientside'] = DATA['type']
+                    _file[DATA['class']][DATA['pocket']]['items'][0][DATA['entityClass']]['type'] = DATA['type']
                     _file[DATA['class']][DATA['pocket']]['items'][0][DATA['entityClass']]['name'] = DATA['entityName']
                 else
                     _file[DATA['class']][k] = {}

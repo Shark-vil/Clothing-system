@@ -91,6 +91,26 @@ local function PlayDmgFall(ply, dmginfo)
 end
 ClothingSystem.Tools.Hooks.AddHook("EntityTakeDamage", PlayDmgFall)
 
+local function TakeDamage()
+    if (!IsValid(ply) || !ply:IsPlayer() || !ply:Alive()) then return end -- Проверка на доступность игрока
+    if (!ply.ClothingSystemPlayerIsSpawn) then return end -- Проверка на то, что игрок заспавнился
+    if (ply.ClothingSystemPlaysoundData == nil) then return end -- Проверка на существование массива со звуками
+
+    if (ply.ClothingSystemPlaysoundData['DamageSoundList'] && ply.ClothingSystemPlaysoundData['isDamageCurTime'] < CurTime()) then
+        local p
+        if (istable(ply.ClothingSystemPlaysoundData['DamageSoundList'][1])) then
+            local ln = table.Count(ply.ClothingSystemPlaysoundData['DamageSoundList'][1]) -- Число элементов массива
+            p = ply.ClothingSystemPlaysoundData['DamageSoundList'][1][math.random(1, ln)] -- Вылавливание рандомного элемента массива
+            ply:EmitSound(p, 75, 100, 1, CHAN_AUTO ) -- Проигрыванеи звука
+        else
+            p = ply.ClothingSystemPlaysoundData['DamageSoundList'][1]
+            ply:EmitSound(p, 30, 100, 0.5, CHAN_AUTO ) -- Проигрыванеи звука
+        end
+        ply.ClothingSystemPlaysoundData['isDamageCurTime'] = CurTime() + ( SoundDuration(p)/2 )
+    end
+end
+ClothingSystem.Tools.Hooks.AddHook("EntityTakeDamage", TakeDamage)
+
 -- Звук прыжка и касания
 local function PlayJump()
     -- Цикл по всем игрокам на сервере
