@@ -46,7 +46,7 @@ ClothingSystem.Tools.Hooks.AddHook("ClothingSystem.PlayerSay", function( ply, te
             object = tr.Entity
             class = object:GetClass()
             item = ClothingStorageSystem:GetItem(class)
-            if (item != false) then
+            if (ClothingStorageConfig.DisableItemCheck || item != false) then
                 finalTable = {}
                 finalTable['entityID'] = object:EntIndex()
                 finalTable['entityClass'] = class
@@ -75,7 +75,7 @@ ClothingSystem.Tools.Hooks.AddHook("ClothingSystem.PlayerSay", function( ply, te
             object = ply:GetActiveWeapon()
             class = object:GetClass()
             item = ClothingStorageSystem:GetItem(class)
-            if (item != false) then
+            if (ClothingStorageConfig.DisableItemCheck || item != false) then
                 finalTable = {}
                 finalTable['entityID'] = object:EntIndex()
                 finalTable['entityClass'] = class

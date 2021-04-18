@@ -1,8 +1,6 @@
 local DATA
 
-local function ViewPockets(ply, data, class, Entity)
-    local PlayerSteamID = ply:ClothingSystemGetNormalSteamID()
-    
+local function ViewPockets(ply, data, class, Entity)    
     local Body = vgui.Create( "DFrame" )
     Body:SetSize( ScrW()/3, ScrH()/3 )
     Body:SetTitle( "" )
@@ -32,7 +30,7 @@ local function ViewPockets(ply, data, class, Entity)
     ClothList.OnRowSelected = function( lst, index, line )
         local name = line:GetColumnText(1)
         local item = ClothingStorageSystem:GetItem(Entity:GetClass())
-        entitySaveClientside = {}
+        local entitySaveClientside = {}
         if (item && item.clientSave != nil) then
             entitySaveClientside = item.clientSave(ply, Entity)
         end

@@ -1,7 +1,6 @@
 ClothingSystem.Tools.Network.AddNetwork("ClothingStorageSystem.SendToServerAddFile", function (len, data, ply)
     local DATA = data
     if ( ClothingStorageSystem:CheckProtect(ply, DATA) ) then
-        local dataSaver = {}
         local steamid
         local _weight
         local Entity = ents.GetByIndex(DATA['entityID'])
