@@ -14,6 +14,7 @@ include("clothing_system_updates.lua")
 
 local prefix = 'clothing_system'
 local shared = {
+    'sh/entities_generate.lua',
     'sh/enhanced_pm_selector.lua',
     'sh/pac3.lua',
     'sh/cvars.lua',

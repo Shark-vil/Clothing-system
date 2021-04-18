@@ -357,7 +357,7 @@ local META = {
             end
 
             -- Спавним item для использования одежды
-            local ent = ents.Create( "clothing_prop" )
+            local ent = ents.Create( "clothing_" .. item_class )
             ent.DisableUse = false
             ent.Group = "clothing_system"
             ent.Class = item_class
@@ -482,14 +482,6 @@ local META = {
 
         network = string.lower( network )
         local ReplaceItem = ClothingSystem:CheckReplace(class, ply)
-        local ReplcaeBone
-        local check_item
-
-        check_item = list.Get("clothing_system")[class].PlayerBase
-
-        if (ReplaceItem) then
-            check_item = ply.ClothingSystemPlayerBase
-        end
 
         if (!istable(ReplaceItem)) then
             ReplaceItem = {}

@@ -26,8 +26,6 @@ end
 
 function ENT:SpawnFunction( ply, tr, ClassName )
 	if ( !tr.Hit ) then return end
-	
-	local GetList = list.Get( "clothing_system" )
 
 	local SpawnPos = tr.HitPos + tr.HitNormal * 10
 	local SpawnAng = ply:EyeAngles()
@@ -58,14 +56,12 @@ end
 function ENT:Use( activator, ply )
 	-- Выполнять 1 раз после нажатия
 	self:SetUseType( SIMPLE_USE )
-	-- Переменная для проверок
-	local check_item
 
 	-- Определение точки спавна энтити
     local start = ply:EyePos()
     local endpos = start + ply:EyeAngles():Forward() * 100
     local filter = function( ent ) 
-        if ( ent:GetClass() == "clothing_prop" ) then 
+        if ( ent.Group == "clothing_system" ) then 
             return true 
         end 
     end
