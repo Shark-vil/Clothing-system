@@ -10,7 +10,17 @@ ClothingSystem.Tools.Network.AddNetwork("ClothingStorageSystem.SendToServerAddFi
             ]])
             return
         end
+
         local item = ClothingStorageSystem:GetItem(Entity:GetClass())
+        if not item then
+            item = ClothingStorageSystem:Add({
+                ['class'] = Entity:GetClass(),
+                ['weight'] = 1,
+            })
+
+            if not item then return end
+        end
+
         local entitySaveServerside = {}
         if (item.serverSave != nil) then
             entitySaveServerside = item.serverSave(ply, Entity)

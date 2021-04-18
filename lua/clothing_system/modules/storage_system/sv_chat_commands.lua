@@ -46,7 +46,15 @@ ClothingSystem.Tools.Hooks.AddHook("ClothingSystem.PlayerSay", function( ply, te
             object = tr.Entity
             class = object:GetClass()
             item = ClothingStorageSystem:GetItem(class)
-            if (ClothingStorageConfig.DisableItemCheck || item != false) then
+
+            if ClothingStorageConfig.DisableItemCheck and not item then
+                item = ClothingStorageSystem:Add({
+                    ['class'] = object:GetClass(),
+                    ['weight'] = 1,
+                })
+            end
+
+            if item then
                 finalTable = {}
                 finalTable['entityID'] = object:EntIndex()
                 finalTable['entityClass'] = class
@@ -75,7 +83,15 @@ ClothingSystem.Tools.Hooks.AddHook("ClothingSystem.PlayerSay", function( ply, te
             object = ply:GetActiveWeapon()
             class = object:GetClass()
             item = ClothingStorageSystem:GetItem(class)
-            if (ClothingStorageConfig.DisableItemCheck || item != false) then
+
+            if ClothingStorageConfig.DisableItemCheck and not item then
+                item = ClothingStorageSystem:Add({
+                    ['class'] = object:GetClass(),
+                    ['weight'] = 1,
+                })
+            end
+
+            if item then
                 finalTable = {}
                 finalTable['entityID'] = object:EntIndex()
                 finalTable['entityClass'] = class

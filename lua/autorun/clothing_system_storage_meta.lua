@@ -32,7 +32,11 @@ META.Add = function(self, array)
             clientSave = _clientSave,
             giveAmmo = _giveAmmo,
         } )
+
+        return list.Get('clothing_storage_system')[_class]
     end
+
+    return nil
 end
 
 META.GetItem = function(self, class)

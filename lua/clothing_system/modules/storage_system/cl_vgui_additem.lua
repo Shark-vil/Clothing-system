@@ -30,6 +30,18 @@ local function ViewPockets(ply, data, class, Entity)
     ClothList.OnRowSelected = function( lst, index, line )
         local name = line:GetColumnText(1)
         local item = ClothingStorageSystem:GetItem(Entity:GetClass())
+        if not item then
+            item = ClothingStorageSystem:Add({
+                ['class'] = Entity:GetClass(),
+                ['weight'] = 1,
+            })
+
+            if not item then
+                Body:Close()
+                return
+            end
+        end
+
         local entitySaveClientside = {}
         if (item && item.clientSave != nil) then
             entitySaveClientside = item.clientSave(ply, Entity)

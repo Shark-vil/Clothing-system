@@ -16,43 +16,42 @@ ClothingSystem.Tools.Network.AddNetwork("ClothingStorageSystem.EntitySpawner", f
     local tr = ClothingStorageSystem:GetTrace(ply)
 
     if (tr != nil) then
-        if (data['type'] == "weapon" && data['usetype'] == "use") then
-            list.Get("clothing_storage_system")[class].giveAmmo(ply, table[class]['serverside'], class, true)
+        local entity = ents.Create( class )
+        if ( !IsValid( entity ) ) then return end
+        entity:SetModel( table[class]['model'] )
+        entity:SetSkin( table[class]['skin'] )
+        entity:SetPos( tr.HitPos )
+        entity.ammo = -1
+        entity.clip1 = -1
+        entity.clip2 = -1
+        for k, v in pairs(table[class]['bodygroups']) do
+            entity:SetBodygroup(k, v)
+        end
+        if (data['usetype'] == "drop" && data['type'] == "weapon") then
+            entity.ammo = table[class]['serverside']['ammo']
+            entity.clip1 = table[class]['serverside']['clip1']
+            entity.clip2 = table[class]['serverside']['clip2']
+        end
+        entity:Spawn()
+        local phys = entity:GetPhysicsObject()
+        if ( phys:IsValid() ) then
+            phys:Wake()
+        end
+
+        ClothingStorageSystem:GetItem(class).spawn(ply, table[class]['serverside'], entity)
+
+        if (data['usetype'] == "use") then
+            entity:Use(ply, entity, USE_ON, 1)
+            if (data['type'] == "weapon") then
+                list.Get("clothing_storage_system")[class].giveAmmo(ply, table[class]['serverside'], class, true)
+            end
         else
-            local entity = ents.Create( class )
-            if ( !IsValid( entity ) ) then return end
-            entity:SetModel( table[class]['model'] )
-            entity:SetSkin( table[class]['skin'] )
-            entity:SetPos( tr.HitPos )
-            entity.ammo = -1
-            entity.clip1 = -1
-            entity.clip2 = -1
-            for k, v in pairs(table[class]['bodygroups']) do
-                entity:SetBodygroup(k, v)
-            end
-            if (data['usetype'] == "drop" && data['type'] == "weapon") then
-                entity.ammo = table[class]['serverside']['ammo']
-                entity.clip1 = table[class]['serverside']['clip1']
-                entity.clip2 = table[class]['serverside']['clip2']
-            end
-            entity:Spawn()
-            local phys = entity:GetPhysicsObject()
-            if ( phys:IsValid() ) then
-                phys:Wake()
-            end
-
-            ClothingStorageSystem:GetItem(class).spawn(ply, table[class]['serverside'], entity)
-
-            if (data['usetype'] == "use") then
-                entity:Use(ply, entity, USE_ON, 1)
-            else
-                entity:SetOwner(ply)
-                if (engine.ActiveGamemode() != "darkrp" && data['type'] != "weapon") then
-                    undo.Create( tostring(entity:GetClass()) )
-                        undo.AddEntity( entity )
-                        undo.SetPlayer( ply )
-                    undo.Finish()
-                end
+            entity:SetOwner(ply)
+            if (engine.ActiveGamemode() != "darkrp" && data['type'] != "weapon") then
+                undo.Create( tostring(entity:GetClass()) )
+                    undo.AddEntity( entity )
+                    undo.SetPlayer( ply )
+                undo.Finish()
             end
         end
 
